@@ -1,0 +1,28 @@
+
+#page {
+    max-width: 1000px;
+    margin: 1.5rem auto;
+}
+
+
+#header-top {
+    display: flex;
+    flex-direction: row;
+    padding: 0 0 5px;
+    border-bottom: 1px solid #888;
+}
+
+.title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: bolder;
+}
+
+.social-div {
+    height: 1.3rem;
+}
+
+.social-div img {
+    width: auto;
+    max-height: 100%;
+}

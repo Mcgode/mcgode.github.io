@@ -1,0 +1,13 @@
+<div class="social-div">
+    {%- if site.github_username -%}
+    <a href="https://github.com/{{ site.github_username| cgi_escape | escape }}">
+        <img src="{{ 'assets/img/github.png' | relative_url }}"  alt="Github"/>
+    </a>
+    {%- endif -%}
+
+    {%- if site.linkedin_username -%}
+    <a href="https://www.linkedin.com/in/{{ site.linkedin_username| cgi_escape | escape }}">
+        <img src="{{ 'assets/img/linkedin.png' | relative_url }}"  alt="Linkedin"/>
+    </a>
+    {%- endif -%}
+</div>
