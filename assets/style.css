@@ -26,3 +26,23 @@
     width: auto;
     max-height: 100%;
 }
+
+nav {
+    padding-top: 5px;
+}
+
+nav a {
+    margin-right: 2rem;
+    color: #333
+}
+
+nav a:visited {
+    margin-right: 2rem;
+    color: #333
+}
+
+nav a.active {
+    color: black;
+    font-weight: bold;
+    text-decoration: underline;
+}

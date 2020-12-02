@@ -10,8 +10,20 @@
 
     </div>
 
-    <div id="navigation">
+    <nav>
 
-    </div>
+        {% assign pages_list = site.pages |  sort: 'order' %}
+        {% assign group = 'navigation' %}
+        {% for node in pages_list %}
+            {% if group == null or group == node.group %}
+                {% if page.url == node.url %}
+                    <a href="{{node.url}}" class="active">{{ node.title | upcase }}</a>
+                {% else %}
+                    <a href="{{node.url}}">{{ node.title | upcase }}</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+    </nav>
 
 </header>
