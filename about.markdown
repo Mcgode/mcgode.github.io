@@ -2,7 +2,7 @@
 layout: page
 title: About
 group: 'navigation'
-permalink: /about/
+permalink: /about
 order: 10
 ---
 
