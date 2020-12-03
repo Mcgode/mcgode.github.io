@@ -21,7 +21,7 @@
 title: Max Godefroy
 email: max@godefroy.net
 description: >- # this means to ignore newlines until "baseurl:"
-  Personal website of Max Godefroy. You can find out more about me and my projects, and read about my articles.
+  Personal website of Max Godefroy. You can find out more about me and my projects, and read my articles.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: maxgodefroy.com # the base hostname & protocol for your site, e.g. http://example.com
 github_username: Mcgode

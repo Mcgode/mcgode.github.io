@@ -8,6 +8,7 @@
 #header-top {
     display: flex;
     flex-direction: row;
+    align-items: center;
     padding: 0 0 5px;
     border-bottom: 1px solid #888;
 }
@@ -16,6 +17,12 @@
     margin: 0;
     font-size: 1.4rem;
     font-weight: bolder;
+}
+
+.subtitle {
+    margin: 0 0 0 2.5rem;
+    font-size: 1.0rem;
+    font-weight: normal;
 }
 
 .social-div {
