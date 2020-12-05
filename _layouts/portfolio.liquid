@@ -10,9 +10,9 @@ layout: default
   {{ content }}
 
   {%- if site.portfolio.size > 0 -%}
-    {% comment %}<h2 class="post-list-heading">{{ page.list_title | default: "Articles" }}</h2>{% endcomment %}
+    {% assign portfolio = site.portfolio | sort: 'date' | reverse %}
     <ul class="post-list">
-      {%- for project in site.portfolio -%}
+      {%- for project in portfolio -%}
       <li>
         {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
         <span class="post-meta">{{ project.date | date: date_format }}</span>
@@ -21,6 +21,10 @@ layout: default
             {{ project.title | escape }}
           </a>
         </h3>
+        {% if project.preview %}
+          <img src="{{ project.preview | relative_url }}" alt="Preview" />
+        {% endif %}
+
         {%- if site.show_excerpts -%}
           {{ project.excerpt }}
         {%- endif -%}
