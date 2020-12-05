@@ -52,3 +52,11 @@ exclude:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+collections:
+
+  portfolio:
+    output: true
+
+  articles:
+    output: true
