@@ -2,8 +2,8 @@
 layout: post
 title: Pathtraced Cornell box
 date: May 2020
-tags: ShaderToy, Raytracing
-preview: /assets/img/portfolio/pathtraced-cornell-box.JPG
+tags: [ShaderToy, Raytracing]
+imagePreview: /assets/img/portfolio/pathtraced-cornell-box.JPG
 ---
 
 This project's aim was to simulate a [Cornell box](https://en.wikipedia.org/wiki/Cornell_box). This was achieved by 

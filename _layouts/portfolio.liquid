@@ -3,33 +3,21 @@ layout: default
 ---
 
 <div class="home">
-  {%- if page.title -%}
-    <h1 class="page-heading">{{ page.title }}</h1>
-  {%- endif -%}
+    {%- if page.title -%}
+        <h1 class="page-heading">{{ page.title }}</h1>
+    {%- endif -%}
 
-  {{ content }}
+    {{ content }}
 
-  {%- if site.portfolio.size > 0 -%}
-    {% assign portfolio = site.portfolio | sort: 'date' | reverse %}
-    <ul class="post-list">
-      {%- for project in portfolio -%}
-      <li>
-          {%- include portfolio-date.liquid -%}
-        <h3>
-          <a class="post-link" href="{{ project.url | relative_url }}">
-            {{ project.title | escape }}
-          </a>
-        </h3>
-        {% if project.preview %}
-          <img src="{{ project.preview | relative_url }}" alt="Preview" />
-        {% endif %}
-
-        {%- if site.show_excerpts -%}
-          {{ project.excerpt }}
-        {%- endif -%}
-      </li>
-      {%- endfor -%}
-    </ul>
-  {%- endif -%}
+    {%- if site.portfolio.size > 0 -%}
+        {% assign portfolio = site.portfolio | sort: 'date' | reverse %}
+        <ul class="post-list">
+            {%- for project in portfolio -%}
+                <li>
+                    {%- include portfolio-excerpt.liquid -%}
+                </li>
+            {%- endfor -%}
+        </ul>
+    {%- endif -%}
 
 </div>

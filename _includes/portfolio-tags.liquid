@@ -1,0 +1,14 @@
+{% assign tags = project.tags %}
+{%- for tag in tags -%}
+
+    {% assign tagValue = tag | strip | downcase %}
+
+    {% assign tagClass = "portfolio-tag default-tag" %}
+
+    {% if tagValue == "shadertoy" %}
+        {% assign tagClass = "portfolio-tag shader-toy-tag" %}
+    {% endif %}
+
+    <span class="{{ tagClass }}">{{ tag | strip }}</span>
+
+{%- endfor -%}

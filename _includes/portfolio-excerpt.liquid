@@ -1,0 +1,31 @@
+<div class="portfolio-excerpt">
+
+    <a href="{{ project.url | relative_url }}">
+
+        {% assign meta-class = "project-meta project-meta-absolute" %}
+
+        {% if project.imagePreview %}
+
+            <img src="{{ project.imagePreview | relative_url }}" alt="Preview" />
+
+        {% else %}
+
+            {% assign meta-class = "project-meta" %}
+
+        {% endif %}
+
+        <div class="{{ meta-class }}">
+
+            {%- include portfolio-date.liquid -%}
+
+            <h3>{{ project.title | escape }}</h3>
+
+            {% if project.tags %}
+                {% include portfolio-tags.liquid %}
+            {% endif %}
+
+        </div>
+
+    </a>
+
+</div>
