@@ -10,14 +10,64 @@ layout: default
     {{ content }}
 
     {%- if site.portfolio.size > 0 -%}
+
         {% assign portfolio = site.portfolio | sort: 'date' | reverse %}
-        <ul class="post-list">
-            {%- for project in portfolio -%}
-                <li>
-                    {%- include portfolio-excerpt.liquid -%}
-                </li>
+        {% assign minorProjects = portfolio | where: "importance", "minor" %}
+        {% assign majorProjects = portfolio | where: "importance", "major" %}
+
+        <div class="container mt-4">
+
+            {% for project in majorProjects %}
+
+                <div class="row no-gutters">{%- include portfolio-excerpt.liquid -%}</div>
+
+            {% endfor %}
+
+        </div>
+
+        <div class="container">
+
+            {% assign closedDiv = true %}
+
+            {%- for project in minorProjects -%}
+
+                {% assign remainder = forloop.index | modulo: 2 %}
+
+                {% if remainder == 1 %}
+                    <div class="row no-gutters">
+                    {% assign closedDiv = false %}
+                {% endif %}
+
+                <div class="col">{%- include portfolio-excerpt.liquid -%}</div>
+
+                {% if remainder == 0 %}
+                    </div>
+                    {% assign closedDiv = true %}
+                {% endif %}
+
             {%- endfor -%}
-        </ul>
+
+            {% if closedDiv == false %}
+                    <div class="col"></div>
+                </div>
+            {% endif %}
+
+        </div>
+
+        <div class="container mt-5">
+
+            {% for project in portfolio %}
+
+                {% if project.importance != "major" and project.importance != "minor" %}
+
+                    <div class="row">{%- include portfolio-excerpt.liquid -%}</div>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
     {%- endif -%}
 
 </div>
