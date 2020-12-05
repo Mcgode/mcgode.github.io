@@ -6,7 +6,11 @@
 
         {% if project.imagePreview %}
 
-            <img src="{{ project.imagePreview | relative_url }}" alt="Preview" />
+            <div class="portfolio-preview-wrap">
+                <div class="portfolio-preview">
+                    <img src="{{ project.imagePreview | relative_url }}" alt="Preview" />
+                </div>
+            </div>
 
         {% else %}
 

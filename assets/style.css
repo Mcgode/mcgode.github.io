@@ -1,6 +1,7 @@
 
 #page {
     max-width: 1000px;
+    width: 100%;
     margin: 1.5rem auto;
 }
 
@@ -58,6 +59,31 @@ nav a.active {
     position: relative;
 }
 
+.minor-project .portfolio-excerpt {
+    font-size: 0.75rem;
+}
+
+.portfolio-preview-wrap {
+    padding-bottom: 56.25%;
+}
+
+.portfolio-preview {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.portfolio-preview img {
+    max-width: 100%;
+    width: auto;
+}
+
 .project-meta-absolute {
     position: absolute;
     left: 1rem;
@@ -65,8 +91,14 @@ nav a.active {
     text-shadow: black 0 0 4px;
 }
 
+.project-meta-absolute .post-meta {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.9em;
+}
+
 .project-meta-absolute h3 {
     color: white;
+    font-size: 1.75em;
 }
 
 .portfolio-tag {
