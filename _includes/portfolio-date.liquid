@@ -1,0 +1,13 @@
+{%- assign date_format = site.minima.date_format | default: "%b %Y" -%}
+
+{% if project.dateString %}
+    <span class="post-meta">{{ project.dateString }}</span>
+{% elsif project.startDate %}
+    {%  if project.endDate %}
+        <span class="post-meta">{{ project.startDate | date: date_format }} - {{ project.endDate | date: date_format }}</span>
+    {% else %}
+        <span class="post-meta">{{ project.startDate | date: date_format }} - Ongoing</span>
+    {% endif %}
+{% elsif project.date %}
+    <span class="post-meta">{{ project.date | date: date_format }}</span>
+{% endif %}

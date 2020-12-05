@@ -14,8 +14,7 @@ layout: default
     <ul class="post-list">
       {%- for project in portfolio -%}
       <li>
-        {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
-        <span class="post-meta">{{ project.date | date: date_format }}</span>
+          {%- include portfolio-date.liquid -%}
         <h3>
           <a class="post-link" href="{{ project.url | relative_url }}">
             {{ project.title | escape }}

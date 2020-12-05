@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Pathtraced Cornell box
-date: 2020-05-11
+date: May 2020
 tags: ShaderToy, Raytracing
 preview: /assets/img/portfolio/pathtraced-cornell-box.JPG
 ---
