@@ -14,7 +14,10 @@ development and the implementation of a progressive ambient occlusion algorithm
 compatible with WebGL.
 
 ![Progressive AO preview](/assets/img/portfolio/dualbox-ao.jpg)
-<p class="font-italic text-center">Computed scene AO, applied on a white material</p>
+<p class="font-italic text-center">
+  Computed scene AO, applied on a white material. 
+  <a href="https://dualbox.com/apps/environment-shadows/dev">Run it</a>
+</p>
 
 This algorithm provides a high fidelity computing of the AO for a provided scene, and
 is executed on the GPU, allowing for improved compute times.
@@ -47,7 +50,15 @@ The algorithm can be applied in a few different pipelines:
   Its main issue though is that if the vertex count is too low, it can lead to 
   artifacts.
   
-Sadly, I cannot delve too much on the inner workings of the algorithm, as it is a 
-company secret.
+Sadly, I cannot delve too much on the inner workings of the algorithm, as it is 
+confidential.
 
-You can find a screen-space demo [here](https://dualbox.com/apps/environment-shadows/dev)
+You can try it [here](https://stl-viewer.dualbox.com/)
+
+<p class="font-italic mt-5">Additional examples:</p>
+
+![Skull example](/assets/img/portfolio/dualbox-ao/skull.jpg)
+
+![Voronoi woman example](/assets/img/portfolio/dualbox-ao/voronoi.jpg)
+
+![Witcher example](/assets/img/portfolio/dualbox-ao/witcher.jpg)
