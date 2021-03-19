@@ -4,7 +4,7 @@ title: "CapsuleSketch"
 date: February 2021
 endDate: March 2021
 startDate: September 2020
-tags: [WebGL, Raytracing]
+tags: [Professional, WebGL, Raytracing]
 imagePreview: /assets/img/portfolio/capsule-sketch.jpg
 importance: major
 ---

@@ -4,7 +4,7 @@ title: "Dualbox - Progressive AO computing"
 date: September 2019
 startDate: June 2019
 endDate: September 2019
-tags: [WebGL]
+tags: [Professional, WebGL]
 imagePreview: /assets/img/portfolio/dualbox-ao.jpg
 importance: major
 ---

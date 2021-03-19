@@ -5,7 +5,9 @@
 
     {% assign tagClass = "portfolio-tag default-tag" %}
 
-    {% if tagValue == "shadertoy" %}
+    {% if tagValue == "professional" %}
+        {% assign tagClass = "portfolio-tag professional-tag" %}
+    {% elsif tagValue == "shadertoy" %}
         {% assign tagClass = "portfolio-tag shader-toy-tag" %}
     {% elsif tagValue == "webgl" %}
         {% assign tagClass = "portfolio-tag web-gl-tag" %}

@@ -107,6 +107,7 @@ nav a.active {
     padding: 0.2rem 0.75rem;
 }
 
+.professional-tag { background-color: #ba9a5b }
 .shader-toy-tag { background-color: #4a9b7c }
 .web-gl-tag { background-color: #90191f }
 .ue4-tag { background-color: #1756a9 }
