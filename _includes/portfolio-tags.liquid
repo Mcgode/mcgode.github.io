@@ -11,6 +11,8 @@
         {% assign tagClass = "portfolio-tag web-gl-tag" %}
     {% elsif tagValue == "ue4" %}
         {% assign tagClass = "portfolio-tag ue4-tag" %}
+    {% elsif tagValue == "opengl" %}
+        {% assign tagClass = "portfolio-tag opengl-tag" %}
     {% endif %}
 
     <span class="{{ tagClass }}">{{ tag | strip }}</span>
