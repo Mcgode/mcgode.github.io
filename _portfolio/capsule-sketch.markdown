@@ -1,7 +1,8 @@
 ---
 layout: post
 title: "CapsuleSketch"
-date: December 2020
+date: March 2021
+endDate: March 2021
 startDate: September 2020
 tags: [WebGL, Raytracing]
 imagePreview: /assets/img/portfolio/capsule-sketch.jpg
