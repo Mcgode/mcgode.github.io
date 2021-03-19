@@ -11,8 +11,8 @@ order: 0
 
 <h3 class="page-heading">Hello!</h3>
 
-Welcome to my humble website. I'm Max, a passionate graphics programmer, with also an 
-interest in game programming.
+Welcome to my humble website. I'm Max, a passionate programmer, with professional experience in 3D 
+graphics and an interest in engine programming.
 
 You will find on this website a little showcase of my portfolio, and some articles 
 relating to tech issues I've encountered along the way. 
