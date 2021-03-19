@@ -16,6 +16,36 @@ capsule primitives.
 I joined the project as R&D intern Software Engineer, and was tasked with improving the rendering engine 
 and implementing new 3D features.
 
+While I have worked on multiple elements of the modeler, I'll only include the most relevant.
+
+
+### Improved cone raytracing
+
+An issue of the modeler when I joined was that, as the capsules (which are a combination of two 
+spheres and a cone frustum) got close to having two extremities of the same radius, the cone 
+raytracing started to experience severe graphical artifacts.
+
+![Graphical artifacts](/assets/img/portfolio/capsule-sketch/cone-artifact.png)
+<p class="font-italic text-center">
+  Graphical artifact example. Top radius is 4, bottom radius is 3.98
+</p>
+
+This issue was due to the way the cone is raytraced, which led to manipulating huge float numbers, 
+resulting in 32-bit float precision errors. <br>
+To mitigate the issue at the time, the cones were converted to cylinders if the radii ratio reached a
+certain threshold. This allowed to avoid the issue, but led to another issue:
+![Cylinder issue](/assets/img/portfolio/capsule-sketch/cylinder-issue.png)
+<p class="font-italic text-center">
+  Left ratio: 3.8 / 4. Right ratio: 3.9 / 4.
+</p>
+
+To solve this issue, I had to implement an entirely new cone raytracing algorithm; one that would 
+solve the float precision issue. The new algorithm revealed itself to be very stable in our use-case,
+being able to handle even the same-radius situation really well.
+
+[Demo](https://www.shadertoy.com/view/WddcDf):
+<iframe width="640" height="360" frameborder="0" src="https://www.shadertoy.com/embed/WddcDf?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
+<br>
 
 ### Raymarching and ShaderToy export
 
