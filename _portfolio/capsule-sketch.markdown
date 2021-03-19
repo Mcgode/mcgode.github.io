@@ -19,7 +19,7 @@ and implementing new 3D features.
 While I have worked on multiple elements of the modeler, I'll only include the most relevant.
 
 
-### Improved cone raytracing
+### Improved cone frustum raytracing
 
 An issue of the modeler when I joined was that, as the capsules (which are a combination of two 
 spheres and a cone frustum) got close to having two extremities of the same radius, the cone 
