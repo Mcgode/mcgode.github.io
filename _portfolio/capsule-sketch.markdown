@@ -6,6 +6,7 @@ endDate: March 2021
 startDate: September 2020
 tags: [Professional, WebGL, Raytracing, Raymarching]
 imagePreview: /assets/img/portfolio/capsule-sketch.jpg
+defaultTagColor: "#d0d0d088"
 importance: major
 ---
 

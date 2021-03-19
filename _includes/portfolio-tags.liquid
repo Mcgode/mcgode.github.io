@@ -3,20 +3,26 @@
 
     {% assign tagValue = tag | strip | downcase %}
 
-    {% assign tagClass = "portfolio-tag default-tag" %}
+    {% assign specificTagClass = false %}
 
     {% if tagValue == "professional" %}
-        {% assign tagClass = "portfolio-tag professional-tag" %}
+        {% assign specificTagClass = "professional-tag" %}
     {% elsif tagValue == "shadertoy" %}
-        {% assign tagClass = "portfolio-tag shader-toy-tag" %}
+        {% assign specificTagClass = "shader-toy-tag" %}
     {% elsif tagValue == "webgl" %}
-        {% assign tagClass = "portfolio-tag web-gl-tag" %}
+        {% assign specificTagClass = "web-gl-tag" %}
     {% elsif tagValue == "ue4" %}
-        {% assign tagClass = "portfolio-tag ue4-tag" %}
+        {% assign specificTagClass = "ue4-tag" %}
     {% elsif tagValue == "opengl" %}
-        {% assign tagClass = "portfolio-tag opengl-tag" %}
+        {% assign specificTagClass = "opengl-tag" %}
     {% endif %}
 
-    <span class="{{ tagClass }}">{{ tag | strip }}</span>
+    {% if specificTagClass %}
+        <span class="portfolio-tag {{ specificTagClass }}">{{ tag | strip }}</span>
+    {% else %}
+        <span class="portfolio-tag default-tag"
+              {% if project.defaultTagColor %}style="background-color: {{ project.defaultTagColor }}"{% endif %}
+        >{{ tag | strip }}</span>
+    {% endif %}
 
 {%- endfor -%}
