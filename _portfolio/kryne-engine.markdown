@@ -25,7 +25,7 @@ the objective with this project, I don't really mind.
 While the project itself started way back in 2019, at the time the objective was simply to set up 3D 
 graphics demos, before I actually got to work in 3D graphics on a professional level.
 
-While I was able to implement a few mrea "advanced" features like cascaded shadow maps, ultimately the
+While I was able to implement a few more "advanced" features like cascaded shadow maps, ultimately the
 project was put on ice as I started to work on a professional level. <br>
 The project code and features were implemented as I went and as a consequence it became messier and 
 messier, pushing me to leave it.
