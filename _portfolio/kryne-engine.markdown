@@ -3,7 +3,7 @@ layout: post
 title: "Kryne Engine"
 date: March 2021
 startDate: November 2020
-tags: ["OpenGL", "Game engine", "Work in progress"]
+tags: ["OpenGL", "Game engine", "&#127959; Work in progress"]
 imagePreview: /assets/img/portfolio/kryne-engine.png
 permalink: /portfolio/kryne-engine:output_ext
 importance: major
