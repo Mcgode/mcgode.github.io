@@ -32,7 +32,7 @@ messier, pushing me to leave it.
 
 ![Cascaded shadow maps demo](/assets/img/portfolio/kryne-engine/csm.png)
 <p class="font-italic text-center">
-  One of the demos that I had implemented back then, featuring cascaded shadow maps.
+  One of the demos that I implemented back then, featuring cascaded shadow maps.
 </p>
 
 
