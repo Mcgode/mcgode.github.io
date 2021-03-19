@@ -57,6 +57,7 @@ collections:
 
   portfolio:
     output: true
+    permalink: /portfolio/:title:output_ext
 
   articles:
     output: true
