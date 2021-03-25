@@ -1,0 +1,50 @@
+---
+layout: default
+---
+<article class="post">
+
+  {% if page.hideTitle != true %}
+    <header class="post-header">
+      <h1 class="post-title">{{ page.title | escape }}</h1>
+    </header>
+  {% endif %}
+
+  <div class="post-content">
+
+      {{ content }}
+
+      <div class="container">
+
+          {% assign closedDiv = true %}
+
+          {%- for image in page.images -%}
+
+              {% assign remainder = forloop.index | modulo: 2 %}
+
+              {% if remainder == 1 %}
+                  <div class="row no-gutters align-items-center">
+                  {% assign closedDiv = false %}
+              {% endif %}
+
+              <div class="col p-1">
+
+                  <img src="{{ image.path | relative_url }}"  alt="{{  image.alt }}" />
+
+              </div>
+
+              {% if remainder == 0 %}
+                  </div>
+                  {% assign closedDiv = true %}
+              {% endif %}
+
+          {%- endfor -%}
+
+          {% if closedDiv == false %}
+              <div class="col"></div>
+          {%- endif -%}
+
+      </div>
+
+  </div>
+
+</article>
