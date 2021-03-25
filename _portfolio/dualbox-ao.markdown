@@ -21,8 +21,11 @@ compatible with WebGL.
 
 This algorithm provides a high fidelity computing of the AO for a provided scene, and
 is executed on the GPU, allowing for improved compute times.
-The computation can be made over multiple frames, to keep the scene from having render
-freezes.
+The algorithm is equivalent to launching several hundreds of thousands of primary rays, 
+which turned out to be tricky when limited to webGL
+
+The computation can be made over multiple frames, to keep the scene from freezing when
+computing the AO.
 
 The algorithm can be applied in a few different pipelines:
 
@@ -51,7 +54,8 @@ The algorithm can be applied in a few different pipelines:
   artifacts.
   
 Sadly, I cannot delve too much on the inner workings of the algorithm, as it is 
-confidential.
+confidential, I can only discuss them with specific authorization. 
+Contact me if interested.
 
 You can try it [here](https://stl-viewer.dualbox.com/)
 
