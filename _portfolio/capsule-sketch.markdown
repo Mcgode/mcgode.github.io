@@ -35,7 +35,7 @@ resulting in 32-bit float precision errors. <br>
 To mitigate the issue at the time, the cones were converted to cylinders if the radii ratio reached a
 certain threshold. This allowed to avoid the issue, but led to another issue:
 ![Cylinder issue](/assets/img/portfolio/capsule-sketch/cylinder-issue.png)
-<p class="font-italic text-center">
+<p class="font-italic text-center ">
   Left ratio: 3.8 / 4. Right ratio: 3.9 / 4.
 </p>
 
@@ -61,7 +61,33 @@ However, the feature was not entirely scrapped as it was decided that it could s
 communication tool by reaching out to the [ShaderToy](https://www.shadertoy.com) community. <br>
 As such, the raymarching code was reused to be exportable as a ShaderToy-ready shader.
 
-Export example:
+Export example (GPU intensive !):
 <iframe width="640" height="360" frameborder="0" src="https://www.shadertoy.com/embed/3d3fRf?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
 
 If the demo has issues loading, use this [link](https://www.shadertoy.com/view/3d3fRf)
+
+
+### Auto-skinning and posing
+
+One of the features I worked on was setting up an automatic skinning process, which allowed the
+implementation of a model posing feature, and should help in setting up an animation feature in the
+near future.
+
+This automatic skinning is possible thanks to the model structure. Since we're using spheres, cone 
+frustums and triangles, the model can be represented as an undirected graph. This makes it easy to determine 
+possible bones in trivial cases:
+![Trivial skinning](/assets/img/portfolio/capsule-sketch/trivial-skinning.png)
+
+However, once cycles start to appear, determining those bones becomes non-trivial. As a consequence, 
+it was decided that cycle groups are non-bendable, and form a single bone. 
+
+My next task then was to create an algorithm for finding cycle groups in an undirected graph, since
+no suitable algorithm was found. In the end, an algorithm was found, and the feature was implemented.
+Technical details should be provided in a future article.
+
+![Cycle groups skinning](/assets/img/portfolio/capsule-sketch/cycle-groups-skinning.png)
+
+Going from there, the next step was generating the proper model skeleton and applying the skinning to 
+the model, then setting up the posing interface:
+![Posing](/assets/img/portfolio/capsule-sketch/posing.png)
+
