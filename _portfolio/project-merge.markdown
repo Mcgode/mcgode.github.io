@@ -5,6 +5,7 @@ date: August 2020
 tags: [UE4, Game prototype]
 imagePreview: /assets/img/portfolio/project-merge.jpg
 importance: minor
+defaultTagColor: "#ffffff44"
 ---
 
 This is a rough prototype of a game mechanic I wanted to try implementing: a realtime rewind mechanic.
