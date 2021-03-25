@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Dualbox - Progressive AO computing"
+title: "Dualbox - GPU-accelerated AO computing"
 date: September 2019
 startDate: June 2019
 endDate: September 2019
