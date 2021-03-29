@@ -4,7 +4,7 @@
 
         <h1 class="title">MAX GODEFROY</h1>
 
-        <h3 class="subtitle">GRAPHICS PROGRAMMING | ENGINE PROGRAMMING</h3>
+        <h3 id="header-subtitle" class="subtitle">GRAPHICS&nbsp;PROGRAMMING | ENGINE&nbsp;PROGRAMMING</h3>
 
         <div class="col"></div>
 
@@ -29,3 +29,31 @@
     </nav>
 
 </header>
+
+<script>
+
+    const headerTop = $("#header-top");
+
+    let previous = window.innerWidth
+    function updateSubtitle() {
+
+        if (!((previous < 800) ^ (window.innerWidth < 800))) {
+
+            let subtitle = $("#header-subtitle");
+            if (window.innerWidth < 800) {
+                subtitle = subtitle.detach();
+                headerTop.after(subtitle)
+            } else {
+                subtitle = subtitle.detach()
+                headerTop.children().first().after(subtitle)
+            }
+
+        }
+        previous = window.innerWidth;
+
+    }
+    updateSubtitle();
+
+    $(window).resize(updateSubtitle);
+
+</script>
