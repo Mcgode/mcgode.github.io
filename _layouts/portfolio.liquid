@@ -15,7 +15,7 @@ layout: default
         {% assign minorProjects = portfolio | where: "importance", "minor" %}
         {% assign majorProjects = portfolio | where: "importance", "major" %}
 
-        <div class="container mt-4">
+        <div id="majorContainer" class="container mt-4">
 
             {% for project in majorProjects %}
 
@@ -27,7 +27,7 @@ layout: default
 
         </div>
 
-        <div class="container">
+        <div id="minorContainer" class="container">
 
             {% assign closedDiv = true %}
 
@@ -75,3 +75,22 @@ layout: default
     {%- endif -%}
 
 </div>
+
+<script>
+
+    const majorContainer = $("#majorContainer");
+    const minorContainer = $("#minorContainer");
+
+    const factor = 0.025;
+    function updateFontSize() {
+
+        const size = Math.min(700, window.innerWidth) * factor;
+        majorContainer.css("font-size", `${size}px`);
+        minorContainer.css("font-size", `${size}px`);
+
+    }
+    updateFontSize();
+
+    $(window).resize(updateFontSize);
+
+</script>

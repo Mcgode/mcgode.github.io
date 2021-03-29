@@ -18,11 +18,11 @@
     {% endif %}
 
     {% if specificTagClass %}
-        <span class="portfolio-tag {{ specificTagClass }}">{{ tag | strip }}</span>
+        <div class="portfolio-tag {{ specificTagClass }}">{{ tag | strip }}</div>
+    {% elsif project.defaultTagColor %}
+        <div class="portfolio-tag default-tag" style="background-color: {{ project.defaultTagColor }}">{{ tag | strip }}</div>
     {% else %}
-        <span class="portfolio-tag default-tag"
-              {% if project.defaultTagColor %}style="background-color: {{ project.defaultTagColor }}"{% endif %}
-        >{{ tag | strip }}</span>
+        <div class="portfolio-tag default-tag">{{ tag | strip }}</div>
     {% endif %}
 
 {%- endfor -%}
