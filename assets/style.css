@@ -123,3 +123,9 @@ nav a.active {
 .ue4-tag { background-color: #1756a9 }
 .opengl-tag { background-color: #5586a4 }
 .default-tag { background-color: #666666 }
+
+#my-photo {
+    border-radius: 50%;
+    width: 25%;
+    border: #aaaaaa22 4px outset;
+}
