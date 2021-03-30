@@ -1,4 +1,11 @@
 <div class="social-div">
+
+    {%- if site.email -%}
+        <a href="mailto: {{ site.email }}" target="_blank">
+            <img src="{{ 'assets/img/gmail.png' | relative_url }}"  alt="Mail"/>
+        </a>
+    {%- endif -%}
+
     {%- if site.github_username -%}
     <a href="https://github.com/{{ site.github_username| cgi_escape | escape }}" target="_blank">
         <img src="{{ 'assets/img/github.png' | relative_url }}"  alt="Github"/>
@@ -10,4 +17,5 @@
         <img src="{{ 'assets/img/linkedin.png' | relative_url }}"  alt="Linkedin"/>
     </a>
     {%- endif -%}
+
 </div>
