@@ -18,4 +18,6 @@ To reduce the memory usage, those states aren't saved at a regular interval, but
 when the physical value changes reach a variable threshold. This allows to compress the information
 by only saving states when a value change is relevant.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/vPMXBt8YsHA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="ratio ratio-16x9">
+    <iframe src="https://www.youtube.com/embed/vPMXBt8YsHA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>

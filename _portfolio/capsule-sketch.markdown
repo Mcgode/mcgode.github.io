@@ -44,7 +44,9 @@ solve the float precision issue. The new algorithm revealed itself to be very st
 being able to handle even the same-radius situation really well.
 
 [Demo](https://www.shadertoy.com/view/WddcDf):
-<iframe width="640" height="360" frameborder="0" src="https://www.shadertoy.com/embed/WddcDf?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
+<div class="ratio ratio-16x9" style="max-width: 640px;">
+    <iframe frameborder="0" src="https://www.shadertoy.com/embed/WddcDf?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
+</div>
 <br>
 
 ### Raymarching and ShaderToy export
@@ -62,7 +64,9 @@ communication tool by reaching out to the [ShaderToy](https://www.shadertoy.com)
 As such, the raymarching code was reused to be exportable as a ShaderToy-ready shader.
 
 Export example (GPU intensive !):
-<iframe width="640" height="360" frameborder="0" src="https://www.shadertoy.com/embed/3d3fRf?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
+<div class="ratio ratio-16x9" style="max-width: 640px;">
+    <iframe frameborder="0" src="https://www.shadertoy.com/embed/3d3fRf?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
+</div>
 
 If the demo has issues loading, use this [link](https://www.shadertoy.com/view/3d3fRf)
 

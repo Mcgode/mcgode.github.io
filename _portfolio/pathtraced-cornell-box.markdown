@@ -13,4 +13,6 @@ pathtracing a scene, and computing the diffuse global illumination, using physic
 The whole process in handled by a single GLSL shader, running on [ShaderToy](https://www.shadertoy.com). 
 
 Result (warning : GPU intensive) :
-<iframe width="640" height="360" frameborder="0" src="https://www.shadertoy.com/embed/WdsfDf?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
+<div class="ratio ratio-16x9" style="max-width: 640px;">
+    <iframe frameborder="0" src="https://www.shadertoy.com/embed/WdsfDf?gui=true&t=10&paused=true&muted=false" allowfullscreen></iframe>
+</div>

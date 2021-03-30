@@ -25,6 +25,7 @@ The source code is unavailable due to exam fraud prevention rules.
 
 ![Animated post-processing](/assets/img/portfolio/cassini-bizarre-adventure/animated-pp.png)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/_7ksN6CkesM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
+<div class="ratio ratio-16x9">
+    <iframe src="https://www.youtube.com/embed/_7ksN6CkesM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
 
