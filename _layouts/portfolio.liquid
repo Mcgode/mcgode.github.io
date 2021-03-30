@@ -19,8 +19,8 @@ layout: default
 
             {% for project in majorProjects %}
 
-                <div class="row no-gutters">
-                    <div class="col">{%- include portfolio-excerpt.liquid -%}</div>
+                <div class="row p-0">
+                    <div class="col p-0">{%- include portfolio-excerpt.liquid -%}</div>
                 </div>
 
             {% endfor %}
@@ -36,11 +36,11 @@ layout: default
                 {% assign remainder = forloop.index | modulo: 2 %}
 
                 {% if remainder == 1 %}
-                    <div class="row no-gutters">
+                    <div class="row p-0">
                     {% assign closedDiv = false %}
                 {% endif %}
 
-                <div class="col minor-project">{%- include portfolio-excerpt.liquid -%}</div>
+                <div class="col minor-project p-0">{%- include portfolio-excerpt.liquid -%}</div>
 
                 {% if remainder == 0 %}
                     </div>
