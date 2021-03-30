@@ -55,7 +55,7 @@ The algorithm can be applied in a few different pipelines:
   
 Sadly, I cannot delve too much on the inner workings of the algorithm, as it is 
 confidential, I can only discuss them with specific authorization. 
-Contact me if interested.
+[Contact me](mailto:{{site.email}}) if interested.
 
 You can try it [here](https://stl-viewer.dualbox.com/)
 
