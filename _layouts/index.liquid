@@ -22,15 +22,15 @@ layout: default
               {% assign remainder = forloop.index | modulo: 2 %}
 
               {% if remainder == 1 %}
-                  <div class="row no-gutters align-items-center">
+                  <div class="row align-items-center">
                   {% assign closedDiv = false %}
               {% endif %}
 
-              <div class="col p-1">
+              <a href="/portfolio" class="col m-1 ratio ratio-16x9">
 
-                  <img src="{{ image.path | relative_url }}"  alt="{{  image.alt }}" />
+                  <img class="img-fluid" src="{{ image.path | relative_url }}"  alt="{{  image.alt }}" />
 
-              </div>
+              </a>
 
               {% if remainder == 0 %}
                   </div>
