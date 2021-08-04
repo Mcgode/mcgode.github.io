@@ -53,6 +53,8 @@ exclude:
 #   - vendor/gems/
 #   - vendor/ruby/
 
+future: true
+
 collections:
 
   portfolio:
