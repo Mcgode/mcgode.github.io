@@ -2,8 +2,9 @@
 layout: post
 title: "Kryne Engine"
 date: March 2021
+endDate: May 2021
 startDate: November 2020
-tags: ["OpenGL", "Game engine", "&#127959; Work in progress"]
+tags: ["OpenGL", "Game engine"]
 imagePreview: /assets/img/portfolio/kryne-engine.png
 permalink: /portfolio/kryne-engine:output_ext
 importance: major
@@ -67,17 +68,17 @@ integrated basic scene editor UI, which allows real-time changes to the scene.
 ![Kryne Engine screenshot](/assets/img/portfolio/kryne-engine.png)
 
 
-### Long-term objectives
+### Going forward
 
-Here are some objectives and features I would like to implement in the far future:
+While I had a few more features I wanted to work on, I ended up abandoning this 
+project.
 
-- Shader cache: Keep shader programs in a RAM cache, or save them as cache binaries for faster 
-  shader loading and compilation.
-  
-- Physics: Import an external lib or recode a physics system for collision detection and more.
+After working for several months on a professional game engine at Wild Sheep Studio,
+I realised that the project was lacking in many areas. 
+Many of the features I wanted were still lacking and I ended up finding the current 
+project structure to be lacking.
 
-- Sound: A sound system for streaming sounds and musics in-game. 
-  
-- Renderer-agnostic engine: The renderer should be able to use a graphics API other than OpenGL, by 
-  using standard methods. So far, a few classes are still designed with only OpenGL in mind (like 
-  textures). 
+So instead, I went ahead and decided to can all the existing work and build a new 
+sleek engine with performance as the central concern.  
+
+[New engine page](kryne-engine-2)
