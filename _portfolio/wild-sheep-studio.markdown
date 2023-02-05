@@ -3,16 +3,27 @@ layout: post
 title: "Wild Sheep Studio"
 date: November 2021
 startDate: May 2021
-tags: ["Professional"]
+tags: ["Professional", "Vulkan", "PS5"]
 imagePreview: /assets/img/portfolio/wild-sheep-studio-big.png
 importance: major
 ---
 
 ![Wild Sheep Studio Logo](/assets/img/portfolio/wild-sheep-studio.png)
 
-Back in May 2021, I joined Wild Sheep Studio, a game studio based in Montpellier, France, as a 
-graphics/engine programmer for their project. More precisely, I was tasked with working on both 
-higher-level (shaders,...) and lower-level (render engine) aspects of the project's 3D pipeline.
+Back in May 2021, I joined Wild Sheep Studio, a AA game studio based in Montpellier, France, as both 
+a graphics and engine programmer for their project.
+Given the size of the team and our use of an in-house engine, while my main job was as a graphics 
+programmer, I've also worked on multiple occasions on the engine itself.
 
-Due to confidentiality, I can't share anything at the moment, but I hope I'll get to show some of
-the work I've done there.
+Due to confidentiality, I can't share anything precise at the moment, but I hope I'll get to show some 
+of the work I've done there.
+
+In the meantime I can share a non-exhaustive list of features I've worked on:
+- setting up a render target texture reuse system, to reduce the render pipeline memory usage.
+- implementation of motion vectors and modernization of the motion blur effect
+- implementation and maintenance of a robust screen space reflections system
+- implementation of a specialized draw system for vegetation instances, which allows for performant 
+  multi-threaded registrations and un-registrations of many instances, with minimal contention.
+- implementation of a hierarchical wind displacement system, to apply wind believable wind to objects 
+  like trees.
+- volumetric lighting maintenance and fixing

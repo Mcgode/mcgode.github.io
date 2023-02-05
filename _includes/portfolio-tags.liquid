@@ -17,6 +17,8 @@
         {% assign specificTagClass = "opengl-tag" %}
     {% elsif tagValue == "vulkan" %}
         {% assign specificTagClass = "vulkan-tag" %}
+    {% elsif tagValue == "ps5" %}
+        {% assign specificTagClass = "ps5-tag" %}
     {% endif %}
 
     {% if specificTagClass %}
