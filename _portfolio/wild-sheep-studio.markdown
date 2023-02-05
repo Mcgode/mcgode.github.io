@@ -22,6 +22,7 @@ In the meantime I can share a non-exhaustive list of features I've worked on:
 - setting up a render target texture reuse system, to reduce the render pipeline memory usage.
 - implementation of motion vectors and modernization of the motion blur effect
 - implementation and maintenance of a robust screen space reflections system
+- improvement of fur shading
 - implementation of a specialized draw system for vegetation instances, which allows for performant 
   multi-threaded registrations and un-registrations of many instances, with minimal contention.
 - implementation of a hierarchical wind displacement system, to apply wind believable wind to objects 
