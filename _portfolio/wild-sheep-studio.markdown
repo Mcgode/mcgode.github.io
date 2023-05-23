@@ -25,6 +25,6 @@ In the meantime I can share a non-exhaustive list of features I've worked on:
 - improvement of fur shading
 - implementation of a specialized draw system for vegetation instances, which allows for performant 
   multi-threaded registrations and un-registrations of many instances, with minimal contention.
-- implementation of a hierarchical wind displacement system, to apply wind believable wind to objects 
+- implementation of a hierarchical wind displacement system, to apply believable wind to objects 
   like trees.
 - volumetric lighting maintenance and fixing
