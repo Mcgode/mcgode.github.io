@@ -3,7 +3,8 @@ layout: post
 title: "Wild Sheep Studio"
 date: November 2021
 startDate: May 2021
-tags: ["Professional", "Vulkan", "PS5"]
+endDate: July 2023
+tags: ["Professional", "Vulkan", "DirectX 12", "PS5"]
 imagePreview: /assets/img/portfolio/wild-sheep-studio-big.png
 importance: major
 ---
@@ -15,8 +16,8 @@ a graphics and engine programmer for their project.
 Given the size of the team and our use of an in-house engine, while my main job was as a graphics 
 programmer, I've also worked on multiple occasions on the engine itself.
 
-Due to confidentiality, I can't share anything precise at the moment, but I hope I'll get to show some 
-of the work I've done there.
+Due to confidentiality, I can't share anything precise, but I hope I'll get to show some 
+of the work I've done there one day.
 
 In the meantime I can share a non-exhaustive list of features I've worked on:
 - setting up a render target texture reuse system, to reduce the render pipeline memory usage.
@@ -28,3 +29,4 @@ In the meantime I can share a non-exhaustive list of features I've worked on:
 - implementation of a hierarchical wind displacement system, to apply believable wind to objects 
   like trees.
 - volumetric lighting maintenance and fixing
+- porting engine to DirectX 12

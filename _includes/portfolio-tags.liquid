@@ -11,14 +11,18 @@
         {% assign specificTagClass = "shader-toy-tag" %}
     {% elsif tagValue == "webgl" %}
         {% assign specificTagClass = "web-gl-tag" %}
-    {% elsif tagValue == "ue4" %}
-        {% assign specificTagClass = "ue4-tag" %}
     {% elsif tagValue == "opengl" %}
         {% assign specificTagClass = "opengl-tag" %}
     {% elsif tagValue == "vulkan" %}
         {% assign specificTagClass = "vulkan-tag" %}
+    {% elsif tagValue == "directx 12" %}
+        {% assign specificTagClass = "directx-12-tag" %}
     {% elsif tagValue == "ps5" %}
         {% assign specificTagClass = "ps5-tag" %}
+    {% elsif tagValue == "ue4" %}
+        {% assign specificTagClass = "ue4-tag" %}
+    {% elsif tagValue == "ue5" %}
+        {% assign specificTagClass = "ue5-tag" %}
     {% endif %}
 
     {% if specificTagClass %}

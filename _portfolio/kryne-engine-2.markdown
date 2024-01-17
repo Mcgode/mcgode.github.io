@@ -3,7 +3,7 @@ layout: post
 title: "Kryne Engine 2"
 date: July 2022
 startDate: July 2021
-tags: ["Vulkan", "Game engine", "&#127959; Work in progress"]
+tags: ["Vulkan", "DirectX 12", "Game engine", "&#127959; Work in progress"]
 imagePreview: /assets/img/portfolio/kryne-engine-2/ke2-placeholder.png
 permalink: /portfolio/kryne-engine-2:output_ext
 importance: minor
@@ -20,11 +20,18 @@ I love having my games running butter smooth even more.
 
 ### Low-level rendering API
 
-The engine will use Vulkan as the backend for rendering, as the API allows for 
-multi-threaded rendering and for many other low-level features such as memory 
-reuse.
+The engine will support both Vulkan and DirectX 12 as the backends for rendering, as the APIs allows for 
+multi-threaded rendering and for many other low-level features such as memory reuse.
 
 I'm still currently setting up the boilerplate though.
+
+### Render graph
+
+To align with modern requirements, the rendering code will be using a render graph approach for optimal async 
+dispatching and barriers.
+
+Rather than implementing the entire system from scratch though, I decided to integrate AMD's Render Pipeline Shader 
+open source framework.
 
 ### Job system
 

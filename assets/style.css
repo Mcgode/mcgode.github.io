@@ -120,10 +120,11 @@ nav a.active {
 .professional-tag { background-color: #ba9a5b }
 .shader-toy-tag { background-color: #4a9b7c }
 .web-gl-tag { background-color: #90191f }
-.vulkan-tag { background-color: #9F1D21 }
-.ue4-tag { background-color: #1756a9 }
 .opengl-tag { background-color: #5586a4 }
+.vulkan-tag { background-color: #9F1D21 }
+.directx-12-tag { background-color: #83bc09 }
 .ps5-tag { background-color: #2a7ae2 }
+.ue4-tag, .ue5-tag { background-color: #1756a9 }
 .default-tag { background-color: #666666 }
 
 #my-photo {
