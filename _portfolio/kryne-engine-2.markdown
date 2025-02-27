@@ -52,3 +52,18 @@ been working on a simplified Render Graph system.
 
 For now it only supports a single sequential queue, but should be easily improved for multi-queue support.
 I also plan to have some other features like in-flight temporary resources memory aliasing.
+
+## Existing samples
+
+### HelloTriangle
+
+The classic graphics programming Hello Triangle. I set this sample up to test out the graphics API implementation.
+
+![Screenshot](/assets/img/portfolio/kryne-engine-2/hello-triangle.png)
+
+### ImGui demo
+
+As stated by name, this is a sample with the only goal of running the ImGui demo window. This sample was used to test 
+the custom ImGui integration into the engine, and to test some graphics API features like descriptor sets. 
+
+![Screenshot](/assets/img/portfolio/kryne-engine-2/imgui-demo.png)
