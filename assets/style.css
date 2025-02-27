@@ -123,6 +123,7 @@ nav a.active {
 .opengl-tag { background-color: #5586a4 }
 .vulkan-tag { background-color: #9F1D21 }
 .directx-12-tag { background-color: #83bc09 }
+.metal-tag { background-color: #8d09a0 }
 .ps5-tag { background-color: #2a7ae2 }
 .ue4-tag, .ue5-tag { background-color: #1756a9 }
 .default-tag { background-color: #666666 }

@@ -3,7 +3,7 @@ layout: post
 title: "Kryne Engine 2"
 date: June 2024
 startDate: July 2021
-tags: ["Vulkan", "DirectX 12", "Game engine", "&#127959; Work in progress"]
+tags: ["Vulkan", "DirectX 12", "Metal", "Game engine", "&#127959; Work in progress"]
 imagePreview: /assets/img/portfolio/kryne-engine-2/ke2-placeholder.png
 permalink: /portfolio/kryne-engine-2:output_ext
 importance: major
