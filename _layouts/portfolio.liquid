@@ -11,64 +11,48 @@ layout: default
 
     {%- if site.portfolio.size > 0 -%}
 
-        {% assign portfolio = site.portfolio | sort: 'date' | reverse %}
-        {% assign minorProjects = portfolio | where: "importance", "minor" %}
-        {% assign majorProjects = portfolio | where: "importance", "major" %}
+        {% assign portfolio = site.portfolio | portfolio_sorted %}
 
-        <div id="majorContainer" class="container mt-4">
+        {%- comment -%}
+            Walk the portfolio in chronological order. Major projects always get
+            their own full-width row. Minor projects (or anything without an
+            "importance") are batched: a run of consecutive minor projects -
+            however long - is rendered together as one row, so pairing follows
+            actual chronology instead of being forced.
+        {%- endcomment -%}
 
-            {% for project in majorProjects %}
+        <div id="portfolioContainer" class="container mt-4">
 
-                <div class="row p-0">
-                    <div class="col p-0">{%- include portfolio-excerpt.liquid -%}</div>
-                </div>
+            {% assign groupStart = -1 %}
 
-            {% endfor %}
+            {% for entry in portfolio %}
 
-        </div>
+                {% if entry.importance == "major" %}
 
-        <div id="minorContainer" class="container">
+                    {% if groupStart >= 0 %}
+                        {% assign groupEnd = forloop.index0 | minus: 1 %}
+                        {% include portfolio-minor-group.liquid groupStart=groupStart groupEnd=groupEnd portfolio=portfolio %}
+                        {% assign groupStart = -1 %}
+                    {% endif %}
 
-            {% assign closedDiv = true %}
-
-            {%- for project in minorProjects -%}
-
-                {% assign remainder = forloop.index | modulo: 2 %}
-
-                {% if remainder == 1 %}
                     <div class="row p-0">
-                    {% assign closedDiv = false %}
-                {% endif %}
-
-                <div class="col minor-project p-0">{%- include portfolio-excerpt.liquid -%}</div>
-
-                {% if remainder == 0 %}
+                        <div class="col p-0">{% assign project = entry %}{%- include portfolio-excerpt.liquid -%}</div>
                     </div>
-                    {% assign closedDiv = true %}
-                {% endif %}
 
-            {%- endfor -%}
+                {% else %}
 
-            {% if closedDiv == false %}
-                    <div class="col"></div>
-                </div>
-            {% endif %}
-
-        </div>
-
-        <div class="container mt-5">
-
-            {% for project in portfolio %}
-
-                {% if project.importance != "major" and project.importance != "minor" %}
-
-                    <div class="row">
-                        <div class="col">{%- include portfolio-excerpt.liquid -%}</div>
-                    </div>
+                    {% if groupStart < 0 %}
+                        {% assign groupStart = forloop.index0 %}
+                    {% endif %}
 
                 {% endif %}
 
             {% endfor %}
+
+            {% if groupStart >= 0 %}
+                {% assign groupEnd = portfolio.size | minus: 1 %}
+                {% include portfolio-minor-group.liquid groupStart=groupStart groupEnd=groupEnd portfolio=portfolio %}
+            {% endif %}
 
         </div>
 
@@ -78,15 +62,13 @@ layout: default
 
 <script>
 
-    const majorContainer = $("#majorContainer");
-    const minorContainer = $("#minorContainer");
+    const portfolioContainer = $("#portfolioContainer");
 
     const factor = 0.025;
     function updateFontSize() {
 
         const size = Math.min(700, window.innerWidth) * factor;
-        majorContainer.css("font-size", `${size}px`);
-        minorContainer.css("font-size", `${size}px`);
+        portfolioContainer.css("font-size", `${size}px`);
 
     }
     updateFontSize();

@@ -1,0 +1,17 @@
+{%- comment -%}
+    Renders one row of consecutive minor projects (include.portfolio[include.groupStart..include.groupEnd]).
+    A lone minor project still gets a filler column so it stays half-width
+    instead of stretching to fill the row like a major project.
+{%- endcomment -%}
+
+<div class="row p-0 minor-row">
+
+    {% for i in (include.groupStart..include.groupEnd) %}
+        <div class="col minor-project p-0">{% assign project = include.portfolio[i] %}{%- include portfolio-excerpt.liquid -%}</div>
+    {% endfor %}
+
+    {% if include.groupEnd == include.groupStart %}
+        <div class="col p-0"></div>
+    {% endif %}
+
+</div>
