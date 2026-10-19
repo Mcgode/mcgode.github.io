@@ -1,7 +1,5 @@
-import { MeshBasicNodeMaterial, Color } from 'three/webgpu';
-import {
-    vec3, vec4, float, max, dot, mix, positionWorld, normalWorld, texture, samplerComparison, uniform,
-} from 'three/tsl';
+import { vec3, vec4, positionWorld, texture, samplerComparison } from 'three/tsl';
+import { createLitMaterial } from './lit-material.js';
 
 /**
  * Creates a lit material that receives shadows from a `DirectionalShadowPass`.
@@ -16,7 +14,7 @@ import {
  *     ) -> f32                      // 1 = fully lit, 0 = fully shadowed
  *
  * Everything around that function (projecting into light space, N.L shading) is boilerplate that does not
- * change between article steps, so it lives here, not in the listings.
+ * change between article steps, so it lives here, not in the listings. The shading itself is `createLitMaterial`.
  *
  * @param {object} options
  * @param {DirectionalShadowPass} options.pass
@@ -42,12 +40,6 @@ export function createShadowedMaterial( { pass, visibility, inputs = {}, color =
         texelSize: pass.texelSize,
     } );
 
-    const albedo = uniform( new Color( color ) );
-    const nDotL = max( dot( normalWorld.normalize(), pass.lightDirection ), 0 );
-    const lit = mix( float( ambient ), float( 1 ), nDotL.mul( visibilityNode ) );
-
-    const material = new MeshBasicNodeMaterial();
-    material.colorNode = vec4( albedo.mul( lit ), 1 );
-    return material;
+    return createLitMaterial( { lightDirection: pass.lightDirection, color, ambient, visibility: visibilityNode } );
 
 }

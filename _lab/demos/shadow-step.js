@@ -4,13 +4,9 @@ import { loadWgslFunction } from '../shadow/wgsl-loader.js';
 import { createShadowedMaterial } from '../shadow/shadowed-material.js';
 import { buildShowcaseScene } from '../shadow/showcase-scene.js';
 import { TexelDebugView } from '../shadow/texel-debug-view.js';
+import { LIGHT_PARAMS, lightDirectionFromParams } from '../shadow/light-controls.js';
 
 const SIDES = { front: FrontSide, back: BackSide, double: DoubleSide };
-
-const LIGHT_PARAMS = {
-    azimuth: { label: 'Light azimuth (°)', min: 0, max: 360, value: 35, step: 1, int: true },
-    elevation: { label: 'Light elevation (°)', min: 5, max: 90, value: 45, step: 1, int: true },
-};
 
 const MIN_EXPONENT = 6;  //   64 x 64
 const MAX_EXPONENT = 12; // 4096 x 4096
@@ -79,9 +75,7 @@ export default async function shadowStep( viewport, { codeUrl, options } ) {
     const direction = new Vector3();
     viewport.beforeRender( ( vp ) => {
 
-        const az = ( values.azimuth ?? LIGHT_PARAMS.azimuth.value ) * Math.PI / 180;
-        const el = ( values.elevation ?? LIGHT_PARAMS.elevation.value ) * Math.PI / 180;
-        direction.set( Math.cos( el ) * Math.sin( az ), Math.sin( el ), Math.cos( el ) * Math.cos( az ) );
+        lightDirectionFromParams( values, direction );
 
         if ( resolutionControl ) pass.setResolution( 2 ** values.mapResolution );
 
