@@ -27,8 +27,24 @@ layout: default
     {{ content }}
   </div>
 
-  {%- if site.disqus.shortname -%}
-    {%- include disqus_comments.html -%}
+  {%- if page.collection == "articles" and page.comments != false -%}
+    <section class="comments">
+      <script src="https://giscus.app/client.js"
+              data-repo="Mcgode/mcgode.github.io"
+              data-repo-id="MDEwOlJlcG9zaXRvcnkzMTc1ODkwMjY="
+              data-category="Comments"
+              data-category-id="DIC_kwDOEu4GIs4DJCZC"
+              data-mapping="pathname"
+              data-strict="0"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="bottom"
+              data-theme="light"
+              data-lang="en"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </section>
   {%- endif -%}
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
