@@ -4,12 +4,13 @@ import { uniform } from 'three/tsl';
  * Builds a small control panel and keeps a TSL uniform in sync with every control.
  *
  * Schema entries: `{ label, min, max, value, step, int?, format? }` for sliders (`format` turns the value into the
- * text shown next to the slider, e.g. to display 2^n for an exponent slider), `{ label, value: boolean }` for checkboxes.
+ * text shown next to the slider, e.g. to display 2^n for an exponent slider), `{ label, value: boolean }` for checkboxes,
+ * and `{ label, value: string, options: [ { value, label } ] }` for drop-downs. Drop-downs have no uniform.
  *
  * @param {HTMLElement} container
  * @param {Record<string, object>} schema
  * @param {() => void} onChange Called after any value changed.
- * @returns {{ values: Record<string, number|boolean>, uniforms: Record<string, any> }}
+ * @returns {{ values: Record<string, number|boolean|string>, uniforms: Record<string, any> }}
  */
 export function buildParamsPanel( container, schema, onChange ) {
 
@@ -26,6 +27,35 @@ export function buildParamsPanel( container, schema, onChange ) {
         const name = document.createElement( 'span' );
         name.className = 'lab-param-label';
         name.textContent = def.label ?? key;
+
+        if ( Array.isArray( def.options ) ) {
+
+            const select = document.createElement( 'select' );
+
+            for ( const option of def.options ) {
+
+                const element = document.createElement( 'option' );
+                element.value = option.value;
+                element.textContent = option.label;
+                select.append( element );
+
+            }
+
+            select.value = def.value;
+            values[ key ] = def.value;
+
+            select.addEventListener( 'input', () => {
+
+                values[ key ] = select.value;
+                onChange();
+
+            } );
+
+            row.append( name, select );
+            container.append( row );
+            continue;
+
+        }
 
         const input = document.createElement( 'input' );
         const readout = document.createElement( 'output' );
