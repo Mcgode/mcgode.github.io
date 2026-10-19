@@ -38,3 +38,195 @@ We will be using the following demo scene:
 {% include lab-viewport.liquid
     demo="unshadowed"
     caption="Drag to orbit, right-drag to pan. Click the viewport to enable scroll-zoom." %}
+
+### Disclaimer: AI use
+
+AI coding was used in the making of this series, to generate the rendering workflow that allows for the interactive 
+demos. 
+However, this entire series is based on my own experience, knowledge and research.
+This use was made to allow me to focus on the article itself rather than spending days setting up the rendering 
+infrastructure.
+
+
+# Rendering a simple directional shadow map
+
+## The principle behind shadow mapping
+
+Shadow mapping is a technique first presented by Lance Williams back in 1978. It tries to solve the following issue:
+How do we test if a given point is occluded from a given light source? Once we have a way to answer this question,
+we can use it to determine if a given point is in shadow or not.
+
+{% include figure.liquid
+    src="/assets/img/articles/shadow-maps/light-occlusion.png"
+    caption="Courtesy of LearnOpenGL"
+%}
+
+A naive approach would be to trace a ray for each fragment displayed on screen to the emitting light source, and if the 
+ray is occluded, then the fragment is in shadow. 
+It is a method actually used in some real-time rendering engines, using techniques like hardware raytracing
+or software ray marching. But it requires a non-negligible amount of computation and a specific separate spatial 
+representation, which can be a bottleneck in real-time applications, especially on older hardware.
+
+Shadow maps are an alternative to that method. The principle is to render a depth map of the scene from the light's
+perspective, the so-called shadow map. 
+Why do that? Because it basically allows us to trace a batch of rays! Each rendered pixel can be 
+interpreted as the result of a ray trace. All this by using a standard rasterizer pipeline. 
+This is what makes this approach so attractive.
+
+If you use have a directional light source, you can use orthographic projection, as it emulates parallel rays.
+For spotlights and point lights, since rays come from a single point, you need to use perspective projection instead.
+
+To determine if a fragment is in shadow, you can project its projection in the light space and retrieve the depth
+value at that point. If the stored depth value is closer to the light source than the projected point depth, then
+you can assume that this fragment is in shadow.
+
+{% include figure.liquid
+    src="/assets/img/articles/shadow-maps/shadow-mapping.png"
+    caption="Courtesy of LearnOpenGL"
+%}
+
+## Rendering the shadow map itself
+
+So, first, we need to render the shadow map. This is done by rendering the scene from the light's perspective. 
+The resulting depth map is then used to determine if a fragment is in shadow.
+
+Setting up the light camera requires you to first retrieve the light position and direction to retrieve a view
+matrix, and then add an orthographic matrix to the mix.
+
+That's where things get a bit more complicated. Since you want your shadow map to detect occlusions in the scene, you
+need to make sure the entire scene is visible in the shadow map frustum.
+There are many ways to do this, but for now, let's set it up manually. 
+
+<script type="text/plain" id="inline-file-light-camera">
+  function makeLightCamera( light, top, bottom, left, right, near, far ) {
+    const camera = new THREE.OrthographicCamera( left, right, top, bottom, near, far );
+    camera.position.copy( light.position );
+    camera.lookAt( light.target.position );
+    return camera;
+  }
+</script>
+
+<script type="text/plain" id="inline-file-shadow-pass">
+  function renderShadowPass( renderer, lightCamera, scene, shadowMap ) {
+    renderer.setRenderTarget( shadowMap );
+    renderer.render( scene, lightCamera );
+    renderer.setRenderTarget( null );
+  }
+</script>
+
+{% include lab-viewport.liquid 
+    demo="light-camera"
+    height=520
+    caption="Drag to orbit, right-drag to pan. Click the viewport to enable scroll-zoom." %}
+
+{% include lab-code.liquid
+    snippets='[
+        {"el": "#inline-file-light-camera", "lang": "js", "title": "Light camera"},
+        {"el": "#inline-file-shadow-pass", "lang": "js", "title": "Shadow pass"}
+    ]' %}
+
+<br>
+
+Feel free to play around with the light frustum parameters to see how they affect the shadow map.
+
+You will likely notice that the shadow map has a limited resolution. This means that you will likely need
+to make sure that the light frustum is as tight as possible to make better use of that limited resolution.
+But you also have to make sure that the frustum is large enough to cover the entire scene, because if you don't,
+you will be unable to render shadows for objects that are outside the frustum.
+
+But let's say you want to render shadows for a large scene. You will likely have to choose between having a large 
+frustum that covers the entire scene, or at least a large part of it, at the cost of diminished precision; or having
+a smaller frustum that covers only a small part of the scene, but which provides better precision.
+
+This is a topic we will discuss a bit more in part 4 of the series, when we tackle cascade shadow maps. 
+For now, let's keep a small scene and implement our shadows there.
+
+A good approach currently is to retrieve the bounding volume of the current scene and use it as a guideline for the
+light frustum.
+
+## Applying the shadow map 
+
+Now that we have our shadow map rendered, we need to project it onto the scene from the camera's perspective.
+
+The process is quite simple. We simply need to project the fragment world position into the light's space, so basically
+we apply the light view-projection matrix to the fragment world position:
+
+<script type="text/plain" id="inline-file-projection">
+    fn retrieveLightLocalPosition(
+        lightViewProj: mat4x4<f32>,
+        worldPos: vec3<f32>,
+    ) -> vec3<f32> {
+        vec4<f32> pos = lightViewProj * vec4<f32>(worldPos, 1.0);
+        return pos.xyz / pos.w;
+    }
+</script>
+
+{% include lab-code.liquid
+    snippets='[
+        {"el": "#inline-file-projection", "lang": "wgsl", "title": "Retrieve light-local position"}
+    ]'
+%}
+
+<br>
+
+Now that We have the light-local position, we can simply sample the shadow map to check for shadow visibility:
+if the light-local position depth is closer to the light than the sampled value, we are in the light (so return 1.0),
+otherwise we're occluded, so in shadow (return 0.0).
+
+<div class="alert alert-info" role="alert">
+Don't forget that the raw light-local position is in NDC space, in [-1, 1] range for x and y coordinates. 
+Make sure to convert to UV space according to the winding order of your renderer.
+<br><br>
+For instance, in WebGPU, the transform from NDC to UV space is: <br>
+<code>vec2&lt;f32&gt; uv = (ndc.xy + vec2&lt;f32&gt;(1.0)) * vec2&lt;f32&gt;(0.5, -0.5);</code>
+</div>
+
+<script type="text/plain" id="inline-file-shadow-visibility">
+    fn shadowVisibility(
+        shadowMap: texture_depth_2d,
+        shadowSampler: sampler_comparison,
+        shadowCoord: vec3<f32>
+    ) -> f32 {
+        // Outside the light's frustum there is no information: treat it as lit.
+        if (any(shadowCoord.xy < vec2<f32>(0.0)) || any(shadowCoord.xy > vec2<f32>(1.0)) || shadowCoord.z > 1.0) {
+            return 1.0;
+        }
+    
+        // 1.0 where the receiver is closer to the light than the stored occluder, else 0.0.
+        return textureSampleCompareLevel(shadowMap, shadowSampler, shadowCoord.xy, shadowCoord.z);
+    }
+</script>
+<script type="text/plain" id="inline-file-apply-visibility">
+    vec3<f32> directLight = computeLight( position, normal, light );
+    // Modulate direct light by shadow visibility.
+    directLight *= shadowVisibility( shadowMap, shadowSampler, shadowCoord );
+</script>
+
+{% include lab-code.liquid
+    snippets='[
+        {"el": "#inline-file-shadow-visibility", "lang": "wgsl", "title": "Shadow visibility"},
+        {"el": "#inline-file-apply-visibility", "lang": "wgsl", "title": "Apply shadow visibility"}
+    ]'
+%}
+
+<br>
+
+Let's see what we get:
+
+{% include lab-viewport.liquid
+    demo="shadow-step"
+    code="shadow/wgsl/base.wgsl"
+    options='{"filter":"nearest"}'
+    caption="Drag to orbit, right-drag to pan. Click the viewport to enable scroll-zoom." %}
+
+<br>
+
+It does not work quite as expected. If you look, you can see that we have shadows cast, but we also have these 
+strange black line artifacts. This is called shadow acne, and it is the fundamental issue with shadow mapping. 
+
+We will address this in the next part, "Shadow biasing".
+
+# References
+
+- Wikipedia - [Shadow mapping](en.wikipedia.org/wiki/Shadow_mapping)
+- Learn OpenGL - [Shadow mapping chapter](https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping)
