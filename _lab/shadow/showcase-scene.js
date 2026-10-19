@@ -1,8 +1,8 @@
-import { Group, Mesh, Vector3, BoxGeometry, SphereGeometry, PlaneGeometry, CylinderGeometry } from 'three/webgpu';
+import { Group, Mesh, Color, Vector3, BoxGeometry, SphereGeometry, PlaneGeometry, CylinderGeometry } from 'three/webgpu';
 
 /**
  * The scene used by the shadow demos: a ground plane plus shapes chosen to expose typical artifacts
- * (tall caster, floating sphere, thin plate on a pole, a slanted slab for grazing angles).
+ * (twisted pile of boxes, floating sphere, thin plate on a pole, a slanted slab for grazing angles).
  * Everything is procedural, so there is nothing to download.
  *
  * @param {( color: number, name: string ) => import('three/webgpu').Material} materialFor
@@ -23,8 +23,38 @@ export function buildShowcaseScene( materialFor ) {
 
     };
 
+    // Boxes stacked on top of each other, each rotated around the up axis relative to the one below it.
+    // Every level pivots at the bottom center of its box, i.e. at the top center of the previous one,
+    // so the boxes stay stacked however much the pile twists.
+    const addStack = ( name, { count, size, color, position, twist } ) => {
+
+        let parent = new Group();
+        parent.position.set( ...position );
+        group.add( parent );
+
+        for ( let i = 0; i < count; i ++ ) {
+
+            const level = new Group();
+            level.position.y = i === 0 ? 0 : size[ 1 ];
+            level.rotation.y = i === 0 ? 0 : twist;
+            parent.add( level );
+
+            // Slight brightness change per box, so that the individual boxes read in the pile.
+            const shade = new Color( color ).offsetHSL( 0, 0, ( i - ( count - 1 ) / 2 ) * 0.025 ).getHex();
+
+            const box = new Mesh( new BoxGeometry( ...size ), materialFor( shade, `${ name }-${ i }` ) );
+            box.name = `${ name }-${ i }`;
+            box.position.y = size[ 1 ] / 2;
+            level.add( box );
+
+            parent = level;
+
+        }
+
+    };
+
     add( 'ground', new PlaneGeometry( 40, 40 ), 0xd8d4cc, [ 0, 0, 0 ], [ - Math.PI / 2, 0, 0 ] );
-    add( 'tower', new BoxGeometry( 1.2, 4, 1.2 ), 0xc9694f, [ - 3, 2, - 2 ] );
+    addStack( 'stack', { count: 5, size: [ 1.2, 0.8, 1.2 ], color: 0xc9694f, position: [ - 3, 0, - 2 ], twist: 0.2 } );
     add( 'block', new BoxGeometry( 2, 1, 2 ), 0x4f86c9, [ 2.5, 0.5, 1 ] );
     add( 'sphere', new SphereGeometry( 1, 48, 24 ), 0x6bb36b, [ 0, 2.2, - 4 ] );
     add( 'pole', new CylinderGeometry( 0.08, 0.08, 2.5 ), 0x888888, [ 5, 1.25, - 3 ] );
