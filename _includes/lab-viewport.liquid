@@ -17,11 +17,12 @@
   prev      source of the previous step; when set, the listing can highlight what changed
   title     heading shown above that listing
   snippets  more code listings, as a JSON list. Each entry is an object with these keys:
-              src, url, text      where the code comes from: a file (path relative to _lab/, JS or WGSL),
-                                  an absolute URL, or inline text
+              src, url, text, el  where the code comes from: a file (path relative to _lab/, JS or WGSL),
+                                  an absolute URL, inline text, or an "inline file": the text of an element of
+                                  the page, given as a CSS selector (see below)
               title, lang         heading, and 'js' | 'wgsl' (default: from the file extension, else plain text)
               region              only show the lines between `// #region <name>` and `// #endregion` in the file
-              prev, prevUrl, prevText   an earlier version, to show what changed (same `region` applied)
+              prev, prevUrl, prevText, prevEl   an earlier version, to show what changed (same `region` applied)
               collapsed           start closed
             Example:
               snippets='[
@@ -29,7 +30,17 @@
                 {"src": "shadow/wgsl/01-pcf.wgsl", "prev": "shadow/wgsl/00-hard.wgsl"},
                 {"text": "const a = 1;", "lang": "js"}
               ]'
-            For longer inline text, capture it and let Liquid do the escaping. Careful: Liquid also evaluates
+            Inline files: put the code in a script element that is not JavaScript. The browser neither runs nor
+            shows it, and its content is raw text: no escaping, no JSON, indentation is removed. It can be anywhere
+            on the page. (Do not write a closing script tag inside it.)
+              <script type="text/plain" id="my-code">
+                const answer = 42;
+              </script>
+              snippets='[{"el": "#my-code", "lang": "js", "title": "My code"}]'
+            Liquid still evaluates double braces and percent tags in the page's source, including inside such a
+            block: wrap code that contains them in Liquid's raw block (the raw / endraw tags).
+
+            Another way for longer inline text: capture it and let Liquid do the escaping. Careful: Liquid also evaluates
             double braces and percent tags inside the captured code, so put code that contains them inside
             Liquid's raw block (the raw / endraw tags):
               {% raw %}{% capture code %}...{% endcapture %}

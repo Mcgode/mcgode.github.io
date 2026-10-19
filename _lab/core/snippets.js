@@ -6,6 +6,9 @@ import { fetchText, parseParamPragmas } from './source.js';
  *   src        path of a source file, relative to _lab/ (JS and WGSL files are published by the build)
  *   url        absolute URL of a file, as an alternative to `src`
  *   text       inline code, as an alternative to a file
+ *   el         CSS selector of an element of the page whose text is the code: an inline "text file". Use
+ *              `<script type="text/plain" id="...">`, which the browser neither runs nor shows, and whose content
+ *              needs no escaping (except a closing script tag). Its indentation is removed.
  *
  * How it is shown:
  *
@@ -19,11 +22,13 @@ import { fetchText, parseParamPragmas } from './source.js';
  *   prev       like `src`, for the previous version (the same `region` is extracted from it)
  *   prevUrl    like `url`
  *   prevText   like `text`
+ *   prevEl     like `el`
  *
  * @typedef {object} SnippetSpec
  * @property {string} [src]
  * @property {string} [url]
  * @property {string} [text]
+ * @property {string} [el]
  * @property {string} [title]
  * @property {string} [lang]
  * @property {string} [region]
@@ -31,6 +36,7 @@ import { fetchText, parseParamPragmas } from './source.js';
  * @property {string} [prev]
  * @property {string} [prevUrl]
  * @property {string} [prevText]
+ * @property {string} [prevEl]
  */
 
 const LANGUAGES = { wgsl: 'wgsl', js: 'js', mjs: 'js' };
@@ -74,6 +80,15 @@ export function dedent( text ) {
 
 }
 
+/** The text of the element a selector designates. */
+function textOfElement( selector ) {
+
+    const element = document.querySelector( selector );
+    if ( element === null ) throw new Error( `No element matches "${ selector }"` );
+    return element.textContent;
+
+}
+
 /** Reads the snippet specs a page provides as JSON (see `SnippetSpec`). A single object is accepted too. */
 export function parseSnippetSpecs( json ) {
 
@@ -96,22 +111,25 @@ export async function loadSnippet( spec, { sourceBase } ) {
     const url = spec.url ?? ( spec.src !== undefined ? new URL( spec.src, sourceBase ).href : undefined );
     const prevUrl = spec.prevUrl ?? ( spec.prev !== undefined ? new URL( spec.prev, sourceBase ).href : undefined );
 
-    if ( spec.text === undefined && url === undefined ) throw new Error( 'A snippet needs `src`, `url` or `text`' );
+    if ( spec.text === undefined && spec.el === undefined && url === undefined )
+        throw new Error( 'A snippet needs `src`, `url`, `text` or `el`' );
 
     const lang = spec.lang ?? ( url !== undefined ? LANGUAGES[ extensionOf( url ) ] : undefined ) ?? 'text';
 
-    const prepare = ( text ) => {
+    // `indented`: the text sits inside something else (a region of a file, an element of the page), which indents it.
+    const prepare = ( text, indented ) => {
 
-        if ( spec.region !== undefined ) text = dedent( extractRegion( text, spec.region ) );
+        if ( spec.region !== undefined ) text = extractRegion( text, spec.region );
         text = stripRegionMarkers( text );
         if ( lang === 'wgsl' ) text = parseParamPragmas( text ).source; // Slider declarations are not part of the code
-        return text.replace( /^\n+|\s+$/g, '' );
+        text = text.replace( /^\n+|\s+$/g, '' );
+        return indented ? dedent( text ) : text;
 
     };
 
     const [ text, previousText ] = await Promise.all( [
-        spec.text ?? fetchText( url ),
-        spec.prevText ?? ( prevUrl !== undefined ? fetchText( prevUrl ) : null ),
+        spec.text ?? ( spec.el !== undefined ? textOfElement( spec.el ) : fetchText( url ) ),
+        spec.prevText ?? ( spec.prevEl !== undefined ? textOfElement( spec.prevEl ) : prevUrl !== undefined ? fetchText( prevUrl ) : null ),
     ] );
 
     const fileName = url?.split( /[?#]/ )[ 0 ].split( '/' ).pop();
@@ -120,8 +138,8 @@ export async function loadSnippet( spec, { sourceBase } ) {
         title: spec.title ?? ( fileName !== undefined ? ( spec.region ? `${ fileName } (${ spec.region })` : fileName ) : undefined ),
         lang,
         collapsed: spec.collapsed === true,
-        source: prepare( text ),
-        previous: previousText === null ? null : prepare( previousText ),
+        source: prepare( text, spec.region !== undefined || spec.el !== undefined ),
+        previous: previousText === null ? null : prepare( previousText, spec.region !== undefined || spec.prevEl !== undefined ),
     };
 
 }

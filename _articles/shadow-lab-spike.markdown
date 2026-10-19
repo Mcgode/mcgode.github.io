@@ -55,7 +55,8 @@ code that runs and cannot drift from it.
      {"src": "shadow/directional-shadow-pass.js", "region": "frustum-fit", "title": "JS: placing the light camera"},
      {"src": "shadow/directional-shadow-pass.js", "region": "depth-pass", "title": "JS: the depth-only pass"},
      {"src": "shadow/wgsl/01-pcf.wgsl", "prev": "shadow/wgsl/00-hard.wgsl", "title": "WGSL: a file and what changed since the last one"},
-     {"text": "// Text written inline, here with a diff against an earlier version\nconst radius = 2;\nconst width = 2 * radius + 1;", "prevText": "// Text written inline, here with a diff against an earlier version\nconst radius = 1;\nconst width = 2 * radius + 1;", "lang": "js", "title": "Inline JS"}
+     {"text": "// Text written inline, here with a diff against an earlier version\nconst radius = 2;\nconst width = 2 * radius + 1;", "prevText": "// Text written inline, here with a diff against an earlier version\nconst radius = 1;\nconst width = 2 * radius + 1;", "lang": "js", "title": "Inline JS"},
+     {"el": "#inline-file", "prevEl": "#inline-file-before", "lang": "js", "title": "An inline file: raw text in a script element, with a diff"}
    ]'
    caption="Listings can also stand alone, without a viewport." %}
 
@@ -64,3 +65,19 @@ code that runs and cannot drift from it.
      {"src": "shadow/lit-material.js", "title": "A whole JS file, shown on its own"},
      {"src": "shadow/showcase-scene.js", "collapsed": true, "title": "A collapsed listing"}
    ]' %}
+
+Inline files are script elements the browser does not run: no JSON, no escaping, and they can be anywhere on the page.
+
+<script type="text/plain" id="inline-file-before">
+  function pick( items, limit ) {
+    return items.filter( ( item ) => item.size < limit );
+  }
+</script>
+
+<script type="text/plain" id="inline-file">
+  // Raw text: <angle brackets>, "quotes" and & signs need no escaping.
+  function pick( items, limit ) {
+    const kept = items.filter( ( item ) => item.size <= limit && item.name !== "<none>" );
+    return kept.length > 0 ? kept : null;
+  }
+</script>
