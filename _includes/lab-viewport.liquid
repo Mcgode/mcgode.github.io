@@ -1,0 +1,41 @@
+{%- comment -%}
+  Interactive 3D viewport, optionally paired with the shader source it runs.
+
+  Usage:
+    {% include lab-viewport.liquid
+         demo="shadow-step"
+         code="shadow/wgsl/01-pcf.wgsl"
+         prev="shadow/wgsl/00-hard.wgsl"
+         title="Percentage-closer filtering"
+         options='{"filter":"nearest"}'
+         height=420
+         caption="Drag to orbit. Click the viewport to enable scroll-zoom." %}
+
+  demo     name of a module in _lab/demos/ (required)
+  code     path (relative to _lab/) of the source file shown next to the viewport.
+           The demo loads the very same file, so the listing is always what is running.
+  prev     source of the previous step; when set, the listing can highlight what changed
+  title    heading shown above the listing
+  options  JSON handed to the demo as-is
+  height   viewport height in px (default 420)
+  caption  text under the viewport
+{%- endcomment -%}
+{%- if include.code -%}{%- assign lab_code = include.code | prepend: '/assets/lab/' | relative_url -%}{%- endif -%}
+{%- if include.prev -%}{%- assign lab_prev = include.prev | prepend: '/assets/lab/' | relative_url -%}{%- endif -%}
+<figure class="lab-viewport"
+        data-demo="{{ include.demo }}"
+        {%- if lab_code %} data-code="{{ lab_code }}"{% endif -%}
+        {%- if lab_prev %} data-prev="{{ lab_prev }}"{% endif -%}
+        {%- if include.title %} data-title="{{ include.title | escape }}"{% endif -%}
+        {%- if include.options %} data-options="{{ include.options | escape }}"{% endif %}
+        style="--lab-height: {{ include.height | default: 420 }}px">
+  <div class="lab-stage">
+    <canvas></canvas>
+    <div class="lab-status" role="status">Scroll here to load the demo…</div>
+  </div>
+  <div class="lab-params"></div>
+  {%- if include.caption %}
+  <figcaption class="lab-caption">{{ include.caption }}</figcaption>
+  {%- endif %}
+  <div class="lab-code" hidden></div>
+</figure>
