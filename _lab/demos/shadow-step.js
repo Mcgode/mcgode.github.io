@@ -3,6 +3,7 @@ import { DirectionalShadowPass } from '../shadow/directional-shadow-pass.js';
 import { loadWgslFunction } from '../shadow/wgsl-loader.js';
 import { createShadowedMaterial } from '../shadow/shadowed-material.js';
 import { buildShowcaseScene } from '../shadow/showcase-scene.js';
+import { TexelDebugView } from '../shadow/texel-debug-view.js';
 
 const SIDES = { front: FrontSide, back: BackSide, double: DoubleSide };
 
@@ -22,6 +23,19 @@ const resolutionParam = ( resolution ) => ( {
     format: ( exponent ) => `${ 2 ** exponent }`,
 } );
 
+const VIEW_PARAM = {
+    label: 'View',
+    value: 'result',
+    options: [
+        { value: 'result', label: 'Result' },
+        { value: 'texels', label: 'Shadow texels only' },
+        { value: 'both', label: 'Result + shadow texels' },
+    ],
+};
+
+const TEXEL_VIEWS_TOO_BIG = `The texel views draw one square per texel and are limited to ${ TexelDebugView.MAX_RESOLUTION } × ` +
+    `${ TexelDebugView.MAX_RESOLUTION }. Lower the shadow map resolution to use them.`;
+
 /**
  * Generic "one WGSL visibility function, one lit scene" demo. Every step of the shadow articles that only
  * swaps the shadow lookup uses this module unchanged; the step *is* the .wgsl file.
@@ -32,19 +46,22 @@ const resolutionParam = ( resolution ) => ( {
  *   side        'front'|'back'|'double'  faces rendered into the map     (default 'front')
  *   lightControls  boolean            show azimuth/elevation sliders      (default true)
  *   resolutionControl  boolean        show the shadow map resolution slider (default true)
+ *   viewControl  boolean              show the view selector: result / shadow texels (default true)
  */
 export default async function shadowStep( viewport, { codeUrl, options } ) {
 
     if ( ! codeUrl ) throw new Error( 'shadow-step needs a `code` file.' );
 
     const {
-        filter = 'nearest', resolution = 2048, side = 'front', lightControls = true, resolutionControl = true,
+        filter = 'nearest', resolution = 2048, side = 'front',
+        lightControls = true, resolutionControl = true, viewControl = true,
     } = options;
 
     const { fn: visibility, schema } = await loadWgslFunction( codeUrl );
     const { values, uniforms } = viewport.setParams( {
         ...( lightControls ? LIGHT_PARAMS : {} ),
         ...( resolutionControl ? { mapResolution: resolutionParam( resolution ) } : {} ),
+        ...( viewControl ? { viewMode: VIEW_PARAM } : {} ),
         ...schema,
     } );
 
@@ -55,6 +72,10 @@ export default async function shadowStep( viewport, { codeUrl, options } ) {
         createShadowedMaterial( { pass, visibility, inputs: uniforms, color } ) );
     viewport.scene.add( group );
 
+    const texelView = new TexelDebugView( pass );
+    viewport.scene.add( texelView.mesh );
+    let status = '';
+
     const direction = new Vector3();
     viewport.beforeRender( ( vp ) => {
 
@@ -64,8 +85,25 @@ export default async function shadowStep( viewport, { codeUrl, options } ) {
 
         if ( resolutionControl ) pass.setResolution( 2 ** values.mapResolution );
 
+        // The depth pass renders everything visible: it must see the scene, and not the debug squares.
+        group.visible = true;
+        texelView.mesh.visible = false;
+
         pass.fit( { direction, center, radius } );
         pass.render( vp.renderer, vp.scene );
+
+        // View modes: the shaded result, the texel squares alone, or the squares drawn over the geometry.
+        const mode = viewControl ? values.viewMode : 'result';
+        const wantsTexels = mode !== 'result';
+        const showTexels = wantsTexels && texelView.supported;
+
+        // Too big to draw as squares: keep showing the result, and say why.
+        const message = wantsTexels && ! showTexels ? TEXEL_VIEWS_TOO_BIG : '';
+        if ( message !== status ) vp.setStatus( status = message );
+
+        if ( showTexels ) texelView.update();
+        texelView.mesh.visible = showTexels;
+        group.visible = ! ( showTexels && mode === 'texels' );
 
     } );
 

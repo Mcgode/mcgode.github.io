@@ -5,6 +5,7 @@ import {
 import { uniform } from 'three/tsl';
 
 const _dir = new Vector3();
+const _forward = new Vector3();
 
 /**
  * Renders a scene's depth from a directional light into a depth texture, and exposes what a receiver
@@ -52,6 +53,17 @@ export class DirectionalShadowPass {
         /** Unit vector pointing from the surface towards the light. */
         this.lightDirection = uniform( new Vector3( 0, 1, 0 ) );
 
+        // Uniforms for debug views, which rebuild world space positions from the stored depths.
+        /** Shadow map size, in texels. */
+        this.resolutionNode = uniform( resolution, 'int' );
+        /** Light clip space -> world space. */
+        this.inverseMatrix = uniform( new Matrix4() );
+        /** The light camera's right and up axes, in world space. A texel is a square spanned by these. */
+        this.lightRight = uniform( new Vector3( 1, 0, 0 ) );
+        this.lightUp = uniform( new Vector3( 0, 1, 0 ) );
+        /** Side length of one texel, in world units. */
+        this.worldTexelSize = uniform( 1 );
+
     }
 
     /**
@@ -66,6 +78,7 @@ export class DirectionalShadowPass {
         this.resolution = resolution;
         this.target.setSize( resolution, resolution );
         this.texelSize.value = 1 / resolution;
+        this.resolutionNode.value = resolution;
 
     }
 
@@ -112,6 +125,10 @@ export class DirectionalShadowPass {
         scene.overrideMaterial = previousOverride;
 
         this.matrix.value.multiplyMatrices( cam.projectionMatrix, cam.matrixWorldInverse );
+
+        this.inverseMatrix.value.copy( this.matrix.value ).invert();
+        cam.matrixWorld.extractBasis( this.lightRight.value, this.lightUp.value, _forward );
+        this.worldTexelSize.value = ( cam.right - cam.left ) / this.resolution;
 
     }
 
