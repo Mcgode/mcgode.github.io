@@ -1,4 +1,4 @@
-import { Group, Mesh, Color, Vector3, BoxGeometry, SphereGeometry, PlaneGeometry, CylinderGeometry } from 'three/webgpu';
+import { Group, Mesh, Color, SRGBColorSpace, Vector3, BoxGeometry, SphereGeometry, PlaneGeometry, CylinderGeometry } from 'three/webgpu';
 
 /**
  * The scene used by the shadow demos: a ground plane plus shapes chosen to expose typical artifacts
@@ -28,6 +28,9 @@ export function buildShowcaseScene( materialFor ) {
     // so the boxes stay stacked however much the pile twists.
     const addStack = ( name, { count, size, color, position, twist } ) => {
 
+        const base = new Color( color );
+        const hsl = {};
+
         let parent = new Group();
         parent.position.set( ...position );
         group.add( parent );
@@ -39,8 +42,16 @@ export function buildShowcaseScene( materialFor ) {
             level.rotation.y = i === 0 ? 0 : twist;
             parent.add( level );
 
-            // Slight brightness change per box, so that the individual boxes read in the pile.
-            const shade = new Color( color ).offsetHSL( 0, 0, ( i - ( count - 1 ) / 2 ) * 0.025 ).getHex();
+            // Slight color variation per box so that the individual boxes read in the pile: the hue drifts along
+            // the stack, and the lightness alternates so that neighbouring boxes always contrast.
+            // Done in sRGB so that the steps look even.
+            base.getHSL( hsl, SRGBColorSpace );
+            const shade = new Color().setHSL(
+                hsl.h + ( i - ( count - 1 ) / 2 ) * 0.02,
+                hsl.s,
+                hsl.l + ( i % 2 === 0 ? - 0.04 : 0.06 ),
+                SRGBColorSpace,
+            ).getHex();
 
             const box = new Mesh( new BoxGeometry( ...size ), materialFor( shade, `${ name }-${ i }` ) );
             box.name = `${ name }-${ i }`;
