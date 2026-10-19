@@ -23,15 +23,20 @@
     outline: none;
 }
 
+/* A centered pill, readable on top of the empty stage as well as over a rendered scene. */
 .lab-status {
     position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    max-width: calc(100% - 2rem);
+    padding: 0.5rem 0.9rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
     text-align: center;
-    color: #556;
+    color: #334;
     font-size: 0.9rem;
     pointer-events: none;
 }
