@@ -26,11 +26,13 @@ export class DirectionalShadowPass {
 
         this.resolution = resolution;
 
+        // #region shadow-map-target
         this.depthTexture = new DepthTexture( resolution, resolution );
         this.depthTexture.compareFunction = LessEqualCompare;
         this.depthTexture.minFilter = this.depthTexture.magFilter = filter === 'linear' ? LinearFilter : NearestFilter;
 
         this.target = new RenderTarget( resolution, resolution, { depthBuffer: true, depthTexture: this.depthTexture } );
+        // #endregion
 
         this.camera = new OrthographicCamera( - 1, 1, 1, - 1, 0.1, 100 );
 
@@ -103,6 +105,7 @@ export class DirectionalShadowPass {
         _dir.copy( direction ).normalize();
         this.lightDirection.value.copy( _dir );
 
+        // #region frustum-fit
         const cam = this.camera;
         cam.left = left; cam.right = right;
         cam.top = top; cam.bottom = bottom;
@@ -114,6 +117,7 @@ export class DirectionalShadowPass {
         cam.up.set( 0, Math.abs( _dir.y ) > 0.999 ? 0 : 1, Math.abs( _dir.y ) > 0.999 ? 1 : 0 );
         cam.lookAt( center );
         cam.updateMatrixWorld();
+        // #endregion
 
     }
 
@@ -142,6 +146,7 @@ export class DirectionalShadowPass {
         cam.coordinateSystem = renderer.coordinateSystem; // WebGPU depth range is 0..1
         cam.updateProjectionMatrix();
 
+        // #region depth-pass
         const previousTarget = renderer.getRenderTarget();
         const previousOverride = scene.overrideMaterial;
 
@@ -150,6 +155,7 @@ export class DirectionalShadowPass {
         renderer.render( scene, cam );
         renderer.setRenderTarget( previousTarget );
         scene.overrideMaterial = previousOverride;
+        // #endregion
 
         this.matrix.value.multiplyMatrices( cam.projectionMatrix, cam.matrixWorldInverse );
 

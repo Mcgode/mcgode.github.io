@@ -83,6 +83,20 @@
     font-size: 0.85rem;
 }
 
+/* One listing per snippet. */
+.lab-snippet + .lab-snippet {
+    margin-top: 1rem;
+}
+
+.lab-snippet-error {
+    margin: 0;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #f0b4b0;
+    border-radius: 6px;
+    background: #fdf0ef;
+    color: #8a2b25;
+}
+
 .lab-code summary {
     cursor: pointer;
     font-weight: 600;
@@ -136,6 +150,7 @@
 .tok-type    { color: #0550ae; }
 .tok-builtin { color: #8250df; }
 .tok-number  { color: #0a7a4b; }
+.tok-string  { color: #0a3069; }
 
 @media (prefers-color-scheme: dark) {
     /* The rest of the site is light-only for now; keep the lab consistent with it. */

@@ -8,6 +8,7 @@
 // chunks, fetched only once a viewport is about to be seen on a browser that supports WebGPU.
 
 import { mountCodeView } from './core/code-view.js';
+import { parseSnippetSpecs } from './core/snippets.js';
 
 const NOT_AVAILABLE = 'This demo needs WebGPU, which your browser does not provide (yet). ' +
     'Recent versions of Chrome, Edge, Safari and Firefox support it.';
@@ -56,21 +57,43 @@ async function mountDemo( el ) {
 
 }
 
+// Source paths in snippet specs are relative to _lab/, whose published copies live in src/ next to this script.
+const sourceBase = new URL( './src/', import.meta.url ).href;
+
 const elements = [ ...document.querySelectorAll( '.lab-viewport' ) ];
 
-for ( const el of elements ) {
+// Code listings: the ones in viewports, and standalone ones (_includes/lab-code.liquid).
+for ( const container of document.querySelectorAll( '.lab-code' ) ) {
 
-    const codeContainer = el.querySelector( '.lab-code' );
+    const viewportElement = container.closest( '.lab-viewport' );
+    const specs = [];
 
-    if ( el.dataset.code && codeContainer ) {
+    try {
 
-        mountCodeView( codeContainer, {
-            url: el.dataset.code,
-            prevUrl: el.dataset.prev,
-            title: el.dataset.title,
-        } ).catch( ( e ) => console.error( e ) );
+        // The code a viewport runs (`code`), listed first, with its previous step for the diff.
+        if ( viewportElement?.dataset.code ) {
+
+            specs.push( {
+                url: viewportElement.dataset.code,
+                prevUrl: viewportElement.dataset.prev,
+                title: viewportElement.dataset.title,
+            } );
+
+        }
+
+        specs.push( ...parseSnippetSpecs( container.dataset.snippets ) );
+
+    } catch ( e ) {
+
+        console.error( e );
+        container.textContent = `Invalid code snippets: ${ e.message }`;
+        container.className += ' lab-snippet-error';
+        container.hidden = false;
+        continue;
 
     }
+
+    if ( specs.length > 0 ) mountCodeView( container, specs, { sourceBase } ).catch( ( e ) => console.error( e ) );
 
 }
 

@@ -11,17 +11,41 @@
          height=420
          caption="Drag to orbit. Click the viewport to enable scroll-zoom." %}
 
-  demo     name of a module in _lab/demos/ (required)
-  code     path (relative to _lab/) of the source file shown next to the viewport.
-           The demo loads the very same file, so the listing is always what is running.
-  prev     source of the previous step; when set, the listing can highlight what changed
-  title    heading shown above the listing
-  options  JSON handed to the demo as-is
-  height   viewport height in px (default 420)
-  caption  text under the viewport
+  demo      name of a module in _lab/demos/ (required)
+  code      path (relative to _lab/) of the source file the demo runs, listed next to the viewport.
+            The demo loads the very same file, so the listing is always what is running.
+  prev      source of the previous step; when set, the listing can highlight what changed
+  title     heading shown above that listing
+  snippets  more code listings, as a JSON list. Each entry is an object with these keys:
+              src, url, text      where the code comes from: a file (path relative to _lab/, JS or WGSL),
+                                  an absolute URL, or inline text
+              title, lang         heading, and 'js' | 'wgsl' (default: from the file extension, else plain text)
+              region              only show the lines between `// #region <name>` and `// #endregion` in the file
+              prev, prevUrl, prevText   an earlier version, to show what changed (same `region` applied)
+              collapsed           start closed
+            Example:
+              snippets='[
+                {"src": "shadow/directional-shadow-pass.js", "region": "frustum-fit", "title": "The light camera"},
+                {"src": "shadow/wgsl/01-pcf.wgsl", "prev": "shadow/wgsl/00-hard.wgsl"},
+                {"text": "const a = 1;", "lang": "js"}
+              ]'
+            For longer inline text, capture it and let Liquid do the escaping. Careful: Liquid also evaluates
+            double braces and percent tags inside the captured code, so put code that contains them inside
+            Liquid's raw block (the raw / endraw tags):
+              {% raw %}{% capture code %}...{% endcapture %}
+              {% capture list %}[{"text": {{ code | jsonify }}, "lang": "js"}]{% endcapture %}
+              {% include lab-viewport.liquid demo="..." snippets=list %}{% endraw %}
+  options   JSON handed to the demo as-is
+  height    viewport height in px (default 420)
+  caption   text under the viewport
+
+  Listings without a viewport: see lab-code.liquid.
 {%- endcomment -%}
-{%- if include.code -%}{%- assign lab_code = include.code | prepend: '/assets/lab/' | relative_url -%}{%- endif -%}
-{%- if include.prev -%}{%- assign lab_prev = include.prev | prepend: '/assets/lab/' | relative_url -%}{%- endif -%}
+{%- comment -%} `assign` is global to the page: reset, or the previous viewport's code would leak into this one. {%- endcomment -%}
+{%- assign lab_code = nil -%}
+{%- assign lab_prev = nil -%}
+{%- if include.code -%}{%- assign lab_code = include.code | prepend: '/assets/lab/src/' | relative_url -%}{%- endif -%}
+{%- if include.prev -%}{%- assign lab_prev = include.prev | prepend: '/assets/lab/src/' | relative_url -%}{%- endif -%}
 <figure class="lab-viewport"
         data-demo="{{ include.demo }}"
         {%- if lab_code %} data-code="{{ lab_code }}"{% endif -%}
@@ -37,5 +61,5 @@
   {%- if include.caption %}
   <figcaption class="lab-caption">{{ include.caption }}</figcaption>
   {%- endif %}
-  <div class="lab-code" hidden></div>
+  <div class="lab-code" hidden{% if include.snippets %} data-snippets="{{ include.snippets | escape }}"{% endif %}></div>
 </figure>

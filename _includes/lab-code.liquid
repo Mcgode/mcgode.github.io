@@ -1,0 +1,13 @@
+{%- comment -%}
+  Code listings on their own, without a viewport. Same snippets, same look, same diffs.
+
+  Usage:
+    {% include lab-code.liquid
+         snippets='[
+           {"src": "shadow/directional-shadow-pass.js", "region": "frustum-fit", "title": "Fitting the light camera"},
+           {"src": "shadow/wgsl/00-hard.wgsl", "title": "The shadow lookup"}
+         ]' %}
+
+  snippets  JSON list of snippet descriptions. The keys are documented in lab-viewport.liquid.
+{%- endcomment -%}
+<div class="lab-code" hidden data-snippets="{{ include.snippets | escape }}"></div>

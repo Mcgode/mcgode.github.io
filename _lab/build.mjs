@@ -6,7 +6,8 @@
 // Output:
 //   assets/lab/boot.js          tiny entry point, the only script the page references
 //   assets/lab/chunks/*.js      lazy chunks: three.js + viewport, one per demo (code splitting)
-//   assets/lab/**/*.wgsl        shader sources, copied verbatim; the page fetches them to display *and* run them
+//   assets/lab/src/**/*.{js,wgsl}   the sources themselves, copied verbatim: the page fetches them to display
+//                                   code listings, and the WGSL ones also to run them
 //
 // Everything in assets/lab/ is generated and git-ignored.
 
@@ -47,12 +48,15 @@ function* walk( dir ) {
 
 }
 
-function copyShaders() {
+/** Sources the page can show as code listings (and, for shaders, run). `.mjs` files are build tooling. */
+const isPublishedSource = ( file ) => file.endsWith( '.js' ) || file.endsWith( '.wgsl' );
+
+function copySources() {
 
     for ( const file of walk( src ) ) {
 
-        if ( ! file.endsWith( '.wgsl' ) ) continue;
-        const dest = join( out, relative( src, file ) );
+        if ( ! isPublishedSource( file ) ) continue;
+        const dest = join( out, 'src', relative( src, file ) );
         mkdirSync( dirname( dest ), { recursive: true } );
         cpSync( file, dest );
 
@@ -66,12 +70,12 @@ if ( watching ) {
 
     const ctx = await context( options );
     await ctx.watch();
-    copyShaders();
+    copySources();
 
-    // .wgsl files are fetched at runtime, not imported, so esbuild does not see them change.
+    // The copies are only fetched at runtime, not imported, so esbuild does not see them change.
     watch( src, { recursive: true }, ( _, name ) => {
 
-        if ( name?.endsWith( '.wgsl' ) ) copyShaders();
+        if ( name && isPublishedSource( name ) ) copySources();
 
     } );
 
@@ -80,6 +84,6 @@ if ( watching ) {
 } else {
 
     await build( options );
-    copyShaders();
+    copySources();
 
 }
