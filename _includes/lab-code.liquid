@@ -1,13 +1,39 @@
 {%- comment -%}
-  Code listings on their own, without a viewport. Same snippets, same look, same diffs.
+  Code listings: parts of source files, a file compared with an earlier version, or inline text.
+  Place it wherever the listing belongs, typically right after the lab-viewport it explains.
 
   Usage:
     {% include lab-code.liquid
          snippets='[
            {"src": "shadow/directional-shadow-pass.js", "region": "frustum-fit", "title": "Fitting the light camera"},
-           {"src": "shadow/wgsl/00-hard.wgsl", "title": "The shadow lookup"}
+           {"src": "shadow/wgsl/01-pcf.wgsl", "prev": "shadow/wgsl/00-hard.wgsl"},
+           {"text": "const a = 1;", "lang": "js"}
          ]' %}
 
-  snippets  JSON list of snippet descriptions. The keys are documented in lab-viewport.liquid.
+  snippets  JSON list of listings (required). Each entry is an object with these keys:
+              src, url, text, el  where the code comes from: a file (path relative to _lab/, JS or WGSL),
+                                  an absolute URL, inline text, or an "inline file": the text of an element of
+                                  the page, given as a CSS selector (see below)
+              title, lang         heading, and 'js' | 'wgsl' (default: from the file extension, else plain text)
+              region              only show the lines between `// #region <name>` and `// #endregion` in the file
+              prev, prevUrl, prevText, prevEl   an earlier version, to show what changed (same `region` applied)
+              collapsed           start closed
+
+  Inline files: put the code in a script element that is not JavaScript. The browser neither runs nor
+  shows it, and its content is raw text: no escaping, no JSON, indentation is removed. It can be anywhere
+  on the page. (Do not write a closing script tag inside it.)
+    <script type="text/plain" id="my-code">
+      const answer = 42;
+    </script>
+    {% raw %}{% include lab-code.liquid snippets='[{"el": "#my-code", "lang": "js", "title": "My code"}]' %}{% endraw %}
+  Liquid still evaluates double braces and percent tags in the page's source, including inside such a
+  block: wrap code that contains them in Liquid's raw block (the raw / endraw tags).
+
+  Another way for longer inline text: capture it and let Liquid do the escaping. Careful: Liquid also evaluates
+  double braces and percent tags inside the captured code, so put code that contains them inside
+  Liquid's raw block (the raw / endraw tags):
+    {% raw %}{% capture code %}...{% endcapture %}
+    {% capture list %}[{"text": {{ code | jsonify }}, "lang": "js"}]{% endcapture %}
+    {% include lab-code.liquid snippets=list %}{% endraw %}
 {%- endcomment -%}
 <div class="lab-code" hidden data-snippets="{{ include.snippets | escape }}"></div>

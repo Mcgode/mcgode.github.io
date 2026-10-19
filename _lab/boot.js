@@ -1,5 +1,5 @@
 // Entry point, loaded on pages with `lab: true`.
-// Every `.lab-viewport` element gets its code listing right away and its 3D demo when it nears the screen.
+// Code listings (`.lab-code`) are rendered right away; each 3D demo (`.lab-viewport`) starts when it nears the screen.
 //
 // A demo is a module in demos/ whose default export is `( viewport, context ) => void | Promise<void>`, with
 //   context = { codeUrl, options, element }
@@ -62,26 +62,14 @@ const sourceBase = new URL( './src/', import.meta.url ).href;
 
 const elements = [ ...document.querySelectorAll( '.lab-viewport' ) ];
 
-// Code listings: the ones in viewports, and standalone ones (_includes/lab-code.liquid).
+// Code listings (_includes/lab-code.liquid): independent of the viewports.
 for ( const container of document.querySelectorAll( '.lab-code' ) ) {
 
-    const viewportElement = container.closest( '.lab-viewport' );
-    const specs = [];
+    let specs;
 
     try {
 
-        // The code a viewport runs (`code`), listed first, with its previous step for the diff.
-        if ( viewportElement?.dataset.code ) {
-
-            specs.push( {
-                url: viewportElement.dataset.code,
-                prevUrl: viewportElement.dataset.prev,
-                title: viewportElement.dataset.title,
-            } );
-
-        }
-
-        specs.push( ...parseSnippetSpecs( container.dataset.snippets ) );
+        specs = parseSnippetSpecs( container.dataset.snippets );
 
     } catch ( e ) {
 

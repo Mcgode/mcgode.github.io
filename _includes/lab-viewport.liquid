@@ -1,67 +1,27 @@
 {%- comment -%}
-  Interactive 3D viewport, optionally paired with the shader source it runs.
+  Interactive 3D viewport. It shows no code: to list code next to it, add a lab-code.liquid include.
 
   Usage:
     {% include lab-viewport.liquid
          demo="shadow-step"
          code="shadow/wgsl/01-pcf.wgsl"
-         prev="shadow/wgsl/00-hard.wgsl"
-         title="Percentage-closer filtering"
          options='{"filter":"nearest"}'
          height=420
          caption="Drag to orbit. Click the viewport to enable scroll-zoom." %}
 
   demo      name of a module in _lab/demos/ (required)
-  code      path (relative to _lab/) of the source file the demo runs, listed next to the viewport.
-            The demo loads the very same file, so the listing is always what is running.
-  prev      source of the previous step; when set, the listing can highlight what changed
-  title     heading shown above that listing
-  snippets  more code listings, as a JSON list. Each entry is an object with these keys:
-              src, url, text, el  where the code comes from: a file (path relative to _lab/, JS or WGSL),
-                                  an absolute URL, inline text, or an "inline file": the text of an element of
-                                  the page, given as a CSS selector (see below)
-              title, lang         heading, and 'js' | 'wgsl' (default: from the file extension, else plain text)
-              region              only show the lines between `// #region <name>` and `// #endregion` in the file
-              prev, prevUrl, prevText, prevEl   an earlier version, to show what changed (same `region` applied)
-              collapsed           start closed
-            Example:
-              snippets='[
-                {"src": "shadow/directional-shadow-pass.js", "region": "frustum-fit", "title": "The light camera"},
-                {"src": "shadow/wgsl/01-pcf.wgsl", "prev": "shadow/wgsl/00-hard.wgsl"},
-                {"text": "const a = 1;", "lang": "js"}
-              ]'
-            Inline files: put the code in a script element that is not JavaScript. The browser neither runs nor
-            shows it, and its content is raw text: no escaping, no JSON, indentation is removed. It can be anywhere
-            on the page. (Do not write a closing script tag inside it.)
-              <script type="text/plain" id="my-code">
-                const answer = 42;
-              </script>
-              snippets='[{"el": "#my-code", "lang": "js", "title": "My code"}]'
-            Liquid still evaluates double braces and percent tags in the page's source, including inside such a
-            block: wrap code that contains them in Liquid's raw block (the raw / endraw tags).
-
-            Another way for longer inline text: capture it and let Liquid do the escaping. Careful: Liquid also evaluates
-            double braces and percent tags inside the captured code, so put code that contains them inside
-            Liquid's raw block (the raw / endraw tags):
-              {% raw %}{% capture code %}...{% endcapture %}
-              {% capture list %}[{"text": {{ code | jsonify }}, "lang": "js"}]{% endcapture %}
-              {% include lab-viewport.liquid demo="..." snippets=list %}{% endraw %}
+  code      path (relative to _lab/) of a source file the demo runs, e.g. the WGSL shader of a shadow step.
+            This is the demo's input; it is not displayed. List it with lab-code.liquid to show what runs.
   options   JSON handed to the demo as-is
   height    viewport height in px (default 420)
   caption   text under the viewport
-
-  Listings without a viewport: see lab-code.liquid.
 {%- endcomment -%}
 {%- comment -%} `assign` is global to the page: reset, or the previous viewport's code would leak into this one. {%- endcomment -%}
 {%- assign lab_code = nil -%}
-{%- assign lab_prev = nil -%}
 {%- if include.code -%}{%- assign lab_code = include.code | prepend: '/assets/lab/src/' | relative_url -%}{%- endif -%}
-{%- if include.prev -%}{%- assign lab_prev = include.prev | prepend: '/assets/lab/src/' | relative_url -%}{%- endif -%}
 <figure class="lab-viewport"
         data-demo="{{ include.demo }}"
         {%- if lab_code %} data-code="{{ lab_code }}"{% endif -%}
-        {%- if lab_prev %} data-prev="{{ lab_prev }}"{% endif -%}
-        {%- if include.title %} data-title="{{ include.title | escape }}"{% endif -%}
         {%- if include.options %} data-options="{{ include.options | escape }}"{% endif %}
         style="--lab-height: {{ include.height | default: 420 }}px">
   <div class="lab-stage">
@@ -72,5 +32,4 @@
   {%- if include.caption %}
   <figcaption class="lab-caption">{{ include.caption }}</figcaption>
   {%- endif %}
-  <div class="lab-code" hidden{% if include.snippets %} data-snippets="{{ include.snippets | escape }}"{% endif %}></div>
 </figure>

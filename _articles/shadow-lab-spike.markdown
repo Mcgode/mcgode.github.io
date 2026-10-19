@@ -26,9 +26,11 @@ lowering the bias to see shadow acne.
 {% include lab-viewport.liquid
    demo="shadow-step"
    code="shadow/wgsl/00-hard.wgsl"
-   title="shadowVisibility: hard shadows"
    options='{"filter":"nearest"}'
    caption="Drag to orbit, right-drag to pan. Click the viewport to enable scroll-zoom." %}
+
+{% include lab-code.liquid
+   snippets='[{"src": "shadow/wgsl/00-hard.wgsl", "title": "shadowVisibility: hard shadows"}]' %}
 
 ## Step 1: percentage-closer filtering
 
@@ -37,19 +39,24 @@ The same lookup, averaged over a square kernel. The listing highlights what chan
 {% include lab-viewport.liquid
    demo="shadow-step"
    code="shadow/wgsl/01-pcf.wgsl"
-   prev="shadow/wgsl/00-hard.wgsl"
-   title="shadowVisibility: PCF"
    options='{"filter":"nearest"}' %}
+
+{% include lab-code.liquid
+   snippets='[{"src": "shadow/wgsl/01-pcf.wgsl", "prev": "shadow/wgsl/00-hard.wgsl", "title": "shadowVisibility: PCF"}]' %}
 
 ## Code listings
 
-A viewport can list several snippets next to it: parts of real source files (JS or WGSL), a file compared with an
-earlier version, or text written inline. Parts of a file are picked with `// #region` markers, so the listing is the
-code that runs and cannot drift from it.
+A viewport shows no code by itself: `lab-code.liquid` lists it, wherever it belongs, typically right after the
+viewport. Listings are parts of real source files (JS or WGSL), a file compared with an earlier version, or text
+written inline. Parts of a file are picked with `// #region` markers, so the listing is the code that runs and cannot
+drift from it.
 
 {% include lab-viewport.liquid
    demo="unshadowed"
    height=240
+   caption="This viewport has no listing of its own." %}
+
+{% include lab-code.liquid
    snippets='[
      {"src": "shadow/directional-shadow-pass.js", "region": "shadow-map-target", "title": "JS: a depth texture to render into"},
      {"src": "shadow/directional-shadow-pass.js", "region": "frustum-fit", "title": "JS: placing the light camera"},
@@ -57,8 +64,7 @@ code that runs and cannot drift from it.
      {"src": "shadow/wgsl/01-pcf.wgsl", "prev": "shadow/wgsl/00-hard.wgsl", "title": "WGSL: a file and what changed since the last one"},
      {"text": "// Text written inline, here with a diff against an earlier version\nconst radius = 2;\nconst width = 2 * radius + 1;", "prevText": "// Text written inline, here with a diff against an earlier version\nconst radius = 1;\nconst width = 2 * radius + 1;", "lang": "js", "title": "Inline JS"},
      {"el": "#inline-file", "prevEl": "#inline-file-before", "lang": "js", "title": "An inline file: raw text in a script element, with a diff"}
-   ]'
-   caption="Listings can also stand alone, without a viewport." %}
+   ]' %}
 
 {% include lab-code.liquid
    snippets='[
