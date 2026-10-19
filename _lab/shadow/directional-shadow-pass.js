@@ -83,6 +83,41 @@ export class DirectionalShadowPass {
     }
 
     /**
+     * Places the light camera and sets its orthographic frustum explicitly. The camera sits `distance` away from
+     * `center`, towards the light, and looks at `center`. Bounds are in the camera's own space, in world units:
+     * `near` and `far` are distances from the camera along its view direction.
+     *
+     * @param {object} frustum
+     * @param {Vector3} frustum.direction Unit vector pointing from the scene towards the light.
+     * @param {Vector3} frustum.center Point the light camera looks at.
+     * @param {number} frustum.distance Distance from `center` to the light camera.
+     * @param {number} frustum.left
+     * @param {number} frustum.right
+     * @param {number} frustum.bottom
+     * @param {number} frustum.top
+     * @param {number} frustum.near
+     * @param {number} frustum.far
+     */
+    setFrustum( { direction, center, distance, left, right, bottom, top, near, far } ) {
+
+        _dir.copy( direction ).normalize();
+        this.lightDirection.value.copy( _dir );
+
+        const cam = this.camera;
+        cam.left = left; cam.right = right;
+        cam.top = top; cam.bottom = bottom;
+        cam.near = near;
+        cam.far = far;
+
+        cam.position.copy( center ).addScaledVector( _dir, distance );
+        // Avoid a degenerate lookAt when the light is straight overhead.
+        cam.up.set( 0, Math.abs( _dir.y ) > 0.999 ? 0 : 1, Math.abs( _dir.y ) > 0.999 ? 1 : 0 );
+        cam.lookAt( center );
+        cam.updateMatrixWorld();
+
+    }
+
+    /**
      * Fits the light's orthographic frustum around a sphere.
      * @param {object} fit
      * @param {Vector3} fit.direction Unit vector pointing from the scene towards the light.
@@ -91,20 +126,12 @@ export class DirectionalShadowPass {
      */
     fit( { direction, center, radius } ) {
 
-        _dir.copy( direction ).normalize();
-        this.lightDirection.value.copy( _dir );
-
-        const cam = this.camera;
-        cam.left = - radius; cam.right = radius;
-        cam.top = radius; cam.bottom = - radius;
-        cam.near = 0.1;
-        cam.far = radius * 2 + 0.2;
-
-        cam.position.copy( center ).addScaledVector( _dir, radius + 0.1 );
-        // Avoid a degenerate lookAt when the light is straight overhead.
-        cam.up.set( 0, Math.abs( _dir.y ) > 0.999 ? 0 : 1, Math.abs( _dir.y ) > 0.999 ? 1 : 0 );
-        cam.lookAt( center );
-        cam.updateMatrixWorld();
+        this.setFrustum( {
+            direction, center,
+            distance: radius + 0.1,
+            left: - radius, right: radius, bottom: - radius, top: radius,
+            near: 0.1, far: radius * 2 + 0.2,
+        } );
 
     }
 

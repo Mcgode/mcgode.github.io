@@ -1,5 +1,5 @@
 import { wgslFn } from 'three/tsl';
-import { loadSource } from '../core/source.js';
+import { loadSource, parseParamPragmas } from '../core/source.js';
 
 /**
  * Splits WGSL source into its top-level `fn` declarations (comments and nesting are respected).
@@ -63,6 +63,17 @@ export function wgslFromSource( source ) {
 export async function loadWgslFunction( url ) {
 
     const { source, schema } = await loadSource( url );
+    return { fn: wgslFromSource( source ), schema };
+
+}
+
+/**
+ * Same as `loadWgslFunction`, for source text that is already at hand, e.g. a `.wgsl` file imported into the bundle
+ * (the build loads `.wgsl` imports as text). Saves a request, and needs no URL.
+ */
+export function wgslFunctionFromText( text ) {
+
+    const { source, schema } = parseParamPragmas( text );
     return { fn: wgslFromSource( source ), schema };
 
 }

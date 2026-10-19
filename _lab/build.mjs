@@ -26,6 +26,7 @@ const options = {
     bundle: true,
     splitting: true,
     format: 'esm',
+    loader: { '.wgsl': 'text' }, // lets demos import a shader as a string
     target: 'es2022',
     minify: ! watching,
     sourcemap: watching ? 'linked' : false, // not worth publishing ~6 MB of maps

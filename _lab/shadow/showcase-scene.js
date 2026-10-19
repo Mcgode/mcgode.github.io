@@ -1,5 +1,8 @@
 import { Group, Mesh, Color, SRGBColorSpace, Vector3, BoxGeometry, SphereGeometry, PlaneGeometry, CylinderGeometry } from 'three/webgpu';
 
+/** Radius of a sphere around everything interesting in the scene (centered on `center` below). */
+export const SHOWCASE_RADIUS = 14;
+
 /**
  * The scene used by the shadow demos: a ground plane plus shapes chosen to expose typical artifacts
  * (twisted pile of boxes, floating sphere, thin plate on a pole, a slanted slab for grazing angles).
@@ -73,6 +76,6 @@ export function buildShowcaseScene( materialFor ) {
     add( 'slab', new BoxGeometry( 3, 0.3, 3 ), 0xa56bc9, [ - 4.5, 0.6, 3.5 ], [ 0, 0.4, 0.35 ] );
 
     // `center` / `radius` describe a sphere around everything interesting, for fitting the light frustum.
-    return { group, center: new Vector3( 0, 1.5, 0 ), radius: 14 };
+    return { group, center: new Vector3( 0, 1.5, 0 ), radius: SHOWCASE_RADIUS };
 
 }

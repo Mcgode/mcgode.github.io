@@ -5,19 +5,9 @@ import { createShadowedMaterial } from '../shadow/shadowed-material.js';
 import { buildShowcaseScene } from '../shadow/showcase-scene.js';
 import { TexelDebugView } from '../shadow/texel-debug-view.js';
 import { LIGHT_PARAMS, lightDirectionFromParams } from '../shadow/light-controls.js';
+import { resolutionParam } from '../shadow/resolution-control.js';
 
 const SIDES = { front: FrontSide, back: BackSide, double: DoubleSide };
-
-const MIN_EXPONENT = 6;  //   64 x 64
-const MAX_EXPONENT = 12; // 4096 x 4096
-
-// Resolution is chosen as an exponent so that the slider only visits powers of two.
-const resolutionParam = ( resolution ) => ( {
-    label: 'Shadow map resolution',
-    min: MIN_EXPONENT, max: MAX_EXPONENT, step: 1, int: true,
-    value: Math.min( MAX_EXPONENT, Math.max( MIN_EXPONENT, Math.round( Math.log2( resolution ) ) ) ),
-    format: ( exponent ) => `${ 2 ** exponent }`,
-} );
 
 const VIEW_PARAM = {
     label: 'View',
