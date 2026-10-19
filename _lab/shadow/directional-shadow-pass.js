@@ -55,6 +55,21 @@ export class DirectionalShadowPass {
     }
 
     /**
+     * Resizes the shadow map in place. The depth texture object stays the same, so materials that already
+     * sample it keep working.
+     * @param {number} resolution
+     */
+    setResolution( resolution ) {
+
+        if ( resolution === this.resolution ) return;
+
+        this.resolution = resolution;
+        this.target.setSize( resolution, resolution );
+        this.texelSize.value = 1 / resolution;
+
+    }
+
+    /**
      * Fits the light's orthographic frustum around a sphere.
      * @param {object} fit
      * @param {Vector3} fit.direction Unit vector pointing from the scene towards the light.

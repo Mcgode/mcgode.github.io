@@ -3,7 +3,8 @@ import { uniform } from 'three/tsl';
 /**
  * Builds a small control panel and keeps a TSL uniform in sync with every control.
  *
- * Schema entries: `{ label, min, max, value, step, int? }` for sliders, `{ label, value: boolean }` for checkboxes.
+ * Schema entries: `{ label, min, max, value, step, int?, format? }` for sliders (`format` turns the value into the
+ * text shown next to the slider, e.g. to display 2^n for an exponent slider), `{ label, value: boolean }` for checkboxes.
  *
  * @param {HTMLElement} container
  * @param {Record<string, object>} schema
@@ -51,7 +52,7 @@ export function buildParamsPanel( container, schema, onChange ) {
             input.min = def.min; input.max = def.max; input.step = def.step ?? 'any';
             input.value = def.value;
 
-            const format = ( v ) => def.int ? String( v ) : Number( v ).toPrecision( 3 );
+            const format = def.format ?? ( ( v ) => def.int ? String( v ) : Number( v ).toPrecision( 3 ) );
             readout.textContent = format( def.value );
 
             values[ key ] = def.value;
