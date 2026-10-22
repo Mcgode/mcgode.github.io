@@ -178,6 +178,13 @@ For instance, in WebGPU, the transform from NDC to UV space is: <br>
 <code>let uv: vec2&lt;f32&gt; = (ndc.xy * vec2&lt;f32&gt;(0.5, -0.5)) + 0.5;</code>
 </div>
 
+Do note that we will be using a comparison sampler here. Basically, it is an extension of the base sampler that
+we provide a comparison operand (less than, greater or equal,...) upon declaration, and a comparison value upon use in
+the shader. With nearest filtering, if the comparison returns true, it returns 1.0, otherwise it returns 0.0.
+Other filtering modes are possible and result in a weighted average of the comparison results from the sampled texels.
+
+The same result can be achieved with a regular sampler, the comparison sampler simply allows for hardware acceleration.
+
 <script type="text/plain" id="inline-file-shadow-visibility">
     fn shadowVisibility(
         shadowMap: texture_depth_2d,
