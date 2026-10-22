@@ -58,7 +58,7 @@ we can use it to determine if a given point is in shadow or not.
 
 {% include figure.liquid
     src="/assets/img/articles/shadow-maps/light-occlusion.png"
-    caption="Courtesy of LearnOpenGL"
+    caption='<a href="https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping">LearnOpenGL</a>, Joey de Vries, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>'
 %}
 
 A naive approach would be to trace a ray for each fragment displayed on screen to the emitting light source, and if the 
@@ -82,7 +82,7 @@ you can assume that this fragment is in shadow.
 
 {% include figure.liquid
     src="/assets/img/articles/shadow-maps/shadow-mapping.png"
-    caption="Courtesy of LearnOpenGL"
+    caption='<a href="https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping">LearnOpenGL</a>, Joey de Vries, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>'
 %}
 
 ## Rendering the shadow map itself
@@ -156,7 +156,7 @@ we apply the light view-projection matrix to the fragment world position:
         lightViewProj: mat4x4<f32>,
         worldPos: vec3<f32>,
     ) -> vec3<f32> {
-        vec4<f32> pos = lightViewProj * vec4<f32>(worldPos, 1.0);
+        let pos: vec4<f32> = lightViewProj * vec4<f32>(worldPos, 1.0);
         return pos.xyz / pos.w;
     }
 </script>
@@ -175,10 +175,10 @@ otherwise we're occluded, so in shadow (return 0.0).
 
 <div class="alert alert-info" role="alert">
 Don't forget that the raw light-local position is in NDC space, in [-1, 1] range for x and y coordinates. 
-Make sure to convert to UV space according to the winding order of your renderer.
+Make sure to convert to UV space according to the texture-coordinate convention of your renderer.
 <br><br>
 For instance, in WebGPU, the transform from NDC to UV space is: <br>
-<code>vec2&lt;f32&gt; uv = (ndc.xy + vec2&lt;f32&gt;(1.0)) * vec2&lt;f32&gt;(0.5, -0.5);</code>
+<code>let uv: vec2&lt;f32&gt; = (ndc.xy * vec2&lt;f32&gt;(0.5, -0.5)) + 0.5;</code>
 </div>
 
 <script type="text/plain" id="inline-file-shadow-visibility">
@@ -197,9 +197,12 @@ For instance, in WebGPU, the transform from NDC to UV space is: <br>
     }
 </script>
 <script type="text/plain" id="inline-file-apply-visibility">
-    vec3<f32> directLight = computeLight( position, normal, light );
+    var directLight: vec3<f32> = computeLight( position, normal, light );
+
+    let ndcShadowCoords: vec3<f32> = retrieveLightLocalPosition( light.viewProj, position );
+    let shadowCoords: vec3<f32> = vec3<f32>( ndcToUv( ndcShadowCoords.xy ), ndcShadowCoords.z );
     // Modulate direct light by shadow visibility.
-    directLight *= shadowVisibility( shadowMap, shadowSampler, shadowCoord );
+    directLight *= shadowVisibility( shadowMap, shadowSampler, shadowCoords );
 </script>
 
 {% include lab-code.liquid
@@ -222,11 +225,12 @@ Let's see what we get:
 <br>
 
 It does not work quite as expected. If you look, you can see that we have shadows cast, but we also have these 
-strange black line artifacts. This is called shadow acne, and it is the fundamental issue with shadow mapping. 
+strange black line artifacts. This is called shadow acne, and it is a recurring issue with shadow mapping. 
 
 We will address this in the next part, "Shadow biasing".
 
 # References
 
-- Wikipedia - [Shadow mapping](en.wikipedia.org/wiki/Shadow_mapping)
+- [Casting Curved Shadows on Curved Surfaces](https://history.siggraph.org/learning/casting-curved-shadows-on-curved-surfaces-by-williams/), Lance Williams (1978)
+- Wikipedia - [Shadow mapping](https://en.wikipedia.org/wiki/Shadow_mapping)
 - Learn OpenGL - [Shadow mapping chapter](https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping)
