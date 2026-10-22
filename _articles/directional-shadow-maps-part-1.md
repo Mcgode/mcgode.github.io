@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Rendering directional shadow maps in 2026 - Part 1"
-date: 2026-10-19
+date: 2026-10-22
 categories: [articles]
 lab: true
 published: true
@@ -11,7 +11,7 @@ published: true
 
 A few weeks ago, I was working on implementing a shadow map solution for one of my engine samples, and was quite 
 surprised at how complicated it was to find up-to-date information on the subject. Not to shame any of the devs who 
-have been publishing articles on the subject on it, but most articles tend to either focus too much on only a part of
+have been publishing articles on the subject, but most articles tend to either focus too much on only a part of
 the subject, or are outdated.
 
 It resulted in me having to spend a considerable amount of time researching and experimenting with different approaches 
@@ -69,14 +69,15 @@ representation, which can be a bottleneck in real-time applications, especially 
 
 Shadow maps are an alternative to that method. The principle is to render a depth map of the scene from the light's
 perspective, the so-called shadow map. 
-Why do that? Because it basically allows us to trace a batch of rays! Each rendered pixel can be 
-interpreted as the result of a ray trace. All this by using a standard rasterizer pipeline. 
+Why do that? Because it basically allows us to trace a batch of rays!
+Each rendered pixel can be interpreted as the result of a ray trace. 
+All this by using a standard rasterizer pipeline. 
 This is what makes this approach so attractive.
 
-If you use have a directional light source, you can use orthographic projection, as it emulates parallel rays.
+If you use a directional light source, you can use orthographic projection, as it emulates parallel rays.
 For spotlights and point lights, since rays come from a single point, you need to use perspective projection instead.
 
-To determine if a fragment is in shadow, you can project its projection in the light space and retrieve the depth
+To determine if a fragment is in shadow, you can project its position in the light space and retrieve the depth
 value at that point. If the stored depth value is closer to the light source than the projected point depth, then
 you can assume that this fragment is in shadow.
 
@@ -90,7 +91,7 @@ you can assume that this fragment is in shadow.
 So, first, we need to render the shadow map. This is done by rendering the scene from the light's perspective. 
 The resulting depth map is then used to determine if a fragment is in shadow.
 
-Setting up the light camera requires you to first retrieve the light position and direction to retrieve a view
+Setting up the light camera requires you to first retrieve the light position and direction to determine a view
 matrix, and then add an orthographic matrix to the mix.
 
 That's where things get a bit more complicated. Since you want your shadow map to detect occlusions in the scene, you
@@ -121,7 +122,7 @@ There are many ways to do this, but for now, let's set it up manually.
 
 Feel free to play around with the light frustum parameters to see how they affect the shadow map.
 
-You will likely notice that the shadow map has a limited resolution. This means that you will likely need
+You will likely notice that the shadow map has a limited resolution. This means that you will need
 to make sure that the light frustum is as tight as possible to make better use of that limited resolution.
 But you also have to make sure that the frustum is large enough to cover the entire scene, because if you don't,
 you will be unable to render shadows for objects that are outside the frustum.
@@ -166,7 +167,7 @@ we apply the light view-projection matrix to the fragment world position:
 
 <br>
 
-Now that We have the light-local position, we can simply sample the shadow map to check for shadow visibility:
+Now that we have the light-local position, we can simply sample the shadow map to check for shadow visibility:
 if the light-local position depth is closer to the light than the sampled value, we are in the light (so return 1.0),
 otherwise we're occluded, so in shadow (return 0.0).
 
@@ -179,8 +180,9 @@ For instance, in WebGPU, the transform from NDC to UV space is: <br>
 </div>
 
 Do note that we will be using a comparison sampler here. Basically, it is an extension of the base sampler that
-we provide a comparison operand (less than, greater or equal,...) upon declaration, and a comparison value upon use in
-the shader. With nearest filtering, if the comparison returns true, it returns 1.0, otherwise it returns 0.0.
+we provide a comparison operand (less than, greater or equal,...) to upon declaration, and a comparison value upon use 
+in the shader. 
+With nearest filtering, if the comparison returns true, it returns 1.0, otherwise it returns 0.0.
 Other filtering modes are possible and result in a weighted average of the comparison results from the sampled texels.
 
 The same result can be achieved with a regular sampler, the comparison sampler simply allows for hardware acceleration.
