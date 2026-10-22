@@ -146,6 +146,11 @@ For now, let's keep a small scene and implement our shadows there.
 A good approach currently is to retrieve the bounding volume of the current scene and use it as a guideline for the
 light frustum.
 
+{% include lab-code.liquid
+    snippets='[
+        {"src": "shadow/directional-shadow-pass.js", "region": "fit-frustum", "title": "Auto-setting frustum based on scene bounding sphere"}
+    ]' %}
+
 ## Applying the shadow map 
 
 Now that we have our shadow map rendered, we need to project it onto the scene from the camera's perspective.

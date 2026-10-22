@@ -121,6 +121,7 @@ export class DirectionalShadowPass {
 
     }
 
+    // #region fit-frustum
     /**
      * Fits the light's orthographic frustum around a sphere.
      * @param {object} fit
@@ -138,6 +139,7 @@ export class DirectionalShadowPass {
         } );
 
     }
+    // #endregion
 
     /** Renders the depth pass and refreshes the matrix uniform. */
     render( renderer, scene ) {
