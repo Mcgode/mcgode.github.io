@@ -38,6 +38,16 @@ jobs:
         uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8
         with:
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically, using the .ruby-version file
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Bundle interactive demos
+        # Bundles _lab/ into assets/lab/, which Jekyll publishes as static files
+        run: |
+          npm ci
+          npm run build
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5

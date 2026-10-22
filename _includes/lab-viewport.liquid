@@ -1,0 +1,35 @@
+{%- comment -%}
+  Interactive 3D viewport. It shows no code: to list code next to it, add a lab-code.liquid include.
+
+  Usage:
+    {% include lab-viewport.liquid
+         demo="shadow-step"
+         code="shadow/wgsl/01-pcf.wgsl"
+         options='{"filter":"nearest"}'
+         height=420
+         caption="Drag to orbit. Click the viewport to enable scroll-zoom." %}
+
+  demo      name of a module in _lab/demos/ (required)
+  code      path (relative to _lab/) of a source file the demo runs, e.g. the WGSL shader of a shadow step.
+            This is the demo's input; it is not displayed. List it with lab-code.liquid to show what runs.
+  options   JSON handed to the demo as-is
+  height    viewport height in px (default 420)
+  caption   text under the viewport
+{%- endcomment -%}
+{%- comment -%} `assign` is global to the page: reset, or the previous viewport's code would leak into this one. {%- endcomment -%}
+{%- assign lab_code = nil -%}
+{%- if include.code -%}{%- assign lab_code = include.code | prepend: '/assets/lab/src/' | relative_url -%}{%- endif -%}
+<figure class="lab-viewport"
+        data-demo="{{ include.demo }}"
+        {%- if lab_code %} data-code="{{ lab_code }}"{% endif -%}
+        {%- if include.options %} data-options="{{ include.options | escape }}"{% endif %}
+        style="--lab-height: {{ include.height | default: 420 }}px">
+  <div class="lab-stage">
+    <canvas></canvas>
+    <div class="lab-status" role="status">Scroll here to load the demo…</div>
+  </div>
+  <div class="lab-params"></div>
+  {%- if include.caption %}
+  <figcaption class="lab-caption">{{ include.caption }}</figcaption>
+  {%- endif %}
+</figure>

@@ -1,0 +1,8 @@
+{%- comment -%}
+  Loaded from head.liquid on pages that set `lab: true` in their front matter.
+  Sources live in _lab/ and are bundled into assets/lab/ by `npm run build` (see _lab/build.mjs).
+  boot.js is the only eager script; three.js and the demos load lazily from assets/lab/chunks/.
+  The query string makes browsers pick up a new boot.js after each deploy.
+{%- endcomment -%}
+<link rel="stylesheet" href="{{ '/assets/css/lab.css' | relative_url }}">
+<script type="module" src="{{ '/assets/lab/boot.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>

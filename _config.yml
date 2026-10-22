@@ -43,6 +43,9 @@ plugins:
 #
 exclude:
   - .idea/
+  - node_modules/
+  - package.json
+  - package-lock.json
 #   - .sass-cache/
 #   - .jekyll-cache/
 #   - gemfiles/

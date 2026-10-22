@@ -1,0 +1,157 @@
+/* Interactive viewports ("lab"). Loaded only on pages with `lab: true`. */
+
+.lab-viewport {
+    margin: 1.5rem 0;
+    padding: 0;
+}
+
+.lab-stage {
+    position: relative;
+    height: var(--lab-height, 420px);
+    border: 1px solid #c8ccd2;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #e9edf2;
+}
+
+.lab-stage canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    outline: none;
+}
+
+/* A centered pill, readable on top of the empty stage as well as over a rendered scene. */
+.lab-status {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    max-width: calc(100% - 2rem);
+    padding: 0.5rem 0.9rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+    text-align: center;
+    color: #334;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.lab-status[hidden] {
+    display: none;
+}
+
+.lab-params {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    padding: 0.6rem 0.2rem 0;
+    font-size: 0.85rem;
+}
+
+.lab-param {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.lab-param input[type=range] {
+    width: 9rem;
+}
+
+.lab-param-value {
+    min-width: 3.2em;
+    font-variant-numeric: tabular-nums;
+    color: #556;
+}
+
+.lab-caption {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: #667;
+}
+
+/* Code listing */
+
+.lab-code {
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+}
+
+/* One listing per snippet. */
+.lab-snippet + .lab-snippet {
+    margin-top: 1rem;
+}
+
+.lab-snippet-error {
+    margin: 0;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #f0b4b0;
+    border-radius: 6px;
+    background: #fdf0ef;
+    color: #8a2b25;
+}
+
+.lab-code summary {
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.lab-code-toggle {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #556;
+}
+
+.lab-code pre {
+    margin: 0;
+    padding: 0.6rem 0;
+    overflow-x: auto;
+    background: #f6f7f9;
+    border: 1px solid #dde0e5;
+    border-radius: 6px;
+    line-height: 1.45;
+}
+
+.lab-code code {
+    display: block;
+    width: max-content;
+    min-width: 100%;
+    font-size: 0.82rem;
+}
+
+.lab-line {
+    display: block;
+    padding: 0 0.8rem;
+    white-space: pre;
+}
+
+.lab-line-add {
+    background: rgba(46, 160, 67, 0.18);
+    box-shadow: inset 3px 0 0 #2ea043;
+}
+
+.lab-line-del {
+    background: rgba(248, 81, 73, 0.14);
+    box-shadow: inset 3px 0 0 #f85149;
+    color: #8a4b48;
+    text-decoration: line-through;
+    text-decoration-color: rgba(248, 81, 73, 0.5);
+}
+
+.tok-comment { color: #6a737d; font-style: italic; }
+.tok-keyword { color: #cf222e; }
+.tok-type    { color: #0550ae; }
+.tok-builtin { color: #8250df; }
+.tok-number  { color: #0a7a4b; }
+.tok-string  { color: #0a3069; }
+
+@media (prefers-color-scheme: dark) {
+    /* The rest of the site is light-only for now; keep the lab consistent with it. */
+}

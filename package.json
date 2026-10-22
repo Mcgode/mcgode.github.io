@@ -1,0 +1,16 @@
+{
+  "name": "mcgode-github-io",
+  "private": true,
+  "type": "module",
+  "description": "Build tooling for the interactive article demos in _lab/. The site itself is plain Jekyll.",
+  "scripts": {
+    "build": "node _lab/build.mjs",
+    "dev": "node _lab/build.mjs --watch"
+  },
+  "dependencies": {
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

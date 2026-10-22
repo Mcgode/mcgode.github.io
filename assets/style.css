@@ -133,3 +133,16 @@ nav a.active {
     width: 25%;
     border: #aaaaaa22 4px outset;
 }
+
+/* Figures (see _includes/figure.liquid): image and caption centered.
+   The element selector keeps this ahead of Bootstrap's `.figure`, which loads after this file. */
+figure.figure {
+    display: block;
+    text-align: center;
+}
+
+figure.figure > .figure-img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
