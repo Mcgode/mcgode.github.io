@@ -28,6 +28,10 @@ As this is a long and complicated topic, I have decided to break it down into fo
 - Part 3: Shadow filtering
 - Part 4: Cascaded shadow maps
 
+To make this series accessible to the most, I will try to explain everything in detail (and avoid using too much
+jargon). Feel free to ask any questions you may have, and I will do my best to answer them, and fix the articles 
+accordingly.
+
 All along these articles, I will be providing interactive demos, both to illustrate and to allow you to navigate the
 scene, change the parameters, and see the possible issues for yourself. 
 The scenes will be rendered using three.js WebGPU, so make sure to use a compatible browser. As such, code samples 
