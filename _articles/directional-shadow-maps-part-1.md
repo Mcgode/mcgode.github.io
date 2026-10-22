@@ -240,8 +240,8 @@ Let's see what we get:
 <br>
 
 It does not work quite as expected. If you look, you can see that we have shadows cast, but we also have these 
-strange black artifacts, which we call a Moiré pattern. 
-This is called shadow acne, and it is a recurring issue with shadow mapping. 
+strange black artifacts, which will show up as a Moiré pattern. 
+This phenomenon is called shadow acne, and it is a recurring issue with shadow mapping. 
 
 We will address this in the next part, "Shadow biasing".
 
