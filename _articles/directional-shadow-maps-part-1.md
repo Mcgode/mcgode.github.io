@@ -221,13 +221,14 @@ Let's see what we get:
 {% include lab-viewport.liquid
     demo="shadow-step"
     code="shadow/wgsl/base.wgsl"
-    options='{"filter":"nearest"}'
+    options='{"filter":"nearest", "viewControl":false}'
     caption="Drag to orbit, right-drag to pan. Click the viewport to enable scroll-zoom." %}
 
 <br>
 
 It does not work quite as expected. If you look, you can see that we have shadows cast, but we also have these 
-strange black line artifacts. This is called shadow acne, and it is a recurring issue with shadow mapping. 
+strange black artifacts, which we call a Moiré pattern. 
+This is called shadow acne, and it is a recurring issue with shadow mapping. 
 
 We will address this in the next part, "Shadow biasing".
 
