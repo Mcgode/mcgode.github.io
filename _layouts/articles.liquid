@@ -9,7 +9,7 @@ layout: default
 
   {{ content }}
 
-  {%- assign listed_articles = site.articles | where_exp: "article", "article.unlisted != true" -%}
+  {%- assign listed_articles = site.articles | where_exp: "article", "article.unlisted != true" | sort: "date" | reverse -%}
   {%- if listed_articles.size > 0 -%}
     {% comment %}<h2 class="post-list-heading">{{ page.list_title | default: "Articles" }}</h2>{% endcomment %}
     <ul class="post-list">
