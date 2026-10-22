@@ -244,7 +244,7 @@ It does not work quite as expected. If you look, you can see that we have shadow
 strange black artifacts, which will show up as a Moiré pattern. 
 This phenomenon is called shadow acne, and it is a recurring issue with shadow mapping. 
 
-We will address this in the next part, "Shadow biasing".
+We will address this in the next part, ["Shadow biasing"]({% link _articles/directional-shadow-maps-part-2.md %}).
 
 # References
 
