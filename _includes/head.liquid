@@ -4,6 +4,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   {%- seo -%}
+  {%- if page.unlisted -%}
+    <meta name="robots" content="noindex">
+  {%- endif -%}
 
   <!-- CSS -->
   <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}" />
