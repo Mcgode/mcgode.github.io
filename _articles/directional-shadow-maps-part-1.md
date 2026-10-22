@@ -106,16 +106,6 @@ There are many ways to do this, but for now, let's set it up manually.
   }
 </script>
 
-<script type="text/plain" id="inline-file-shadow-pass">
-  function renderShadowPass( renderer, lightCamera, scene, shadowMap, shadowMapMaterial ) {
-    scene.overrideMaterial = shadowMapMaterial;
-    renderer.setRenderTarget( shadowMap );
-    renderer.render( scene, lightCamera );
-    renderer.setRenderTarget( null );
-    scene.overrideMaterial = null;
-}
-</script>
-
 {% include lab-viewport.liquid 
     demo="light-camera"
     height=520
@@ -124,7 +114,7 @@ There are many ways to do this, but for now, let's set it up manually.
 {% include lab-code.liquid
     snippets='[
         {"el": "#inline-file-light-camera", "lang": "js", "title": "Light camera"},
-        {"el": "#inline-file-shadow-pass", "lang": "js", "title": "Shadow pass"}
+        {"src": "shadow/directional-shadow-pass.js", "region": "depth-pass", "title": "Shadow pass"}
     ]' %}
 
 <br>
