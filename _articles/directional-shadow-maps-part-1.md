@@ -107,11 +107,13 @@ There are many ways to do this, but for now, let's set it up manually.
 </script>
 
 <script type="text/plain" id="inline-file-shadow-pass">
-  function renderShadowPass( renderer, lightCamera, scene, shadowMap ) {
+  function renderShadowPass( renderer, lightCamera, scene, shadowMap, shadowMapMaterial ) {
+    scene.overrideMaterial = shadowMapMaterial;
     renderer.setRenderTarget( shadowMap );
     renderer.render( scene, lightCamera );
     renderer.setRenderTarget( null );
-  }
+    scene.overrideMaterial = null;
+}
 </script>
 
 {% include lab-viewport.liquid 
