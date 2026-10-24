@@ -226,3 +226,11 @@ trial and error process to find the right values:
 
 Previous part: [Part 1]({% link _articles/directional-shadow-maps-part-1.md %}).
 Next part: [Part 3]({% link _articles/directional-shadow-maps-part-3.md %}).
+
+# References
+
+- LearnOpenGL - [Shadow mapping](https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping)
+- Render Diagrams - [Shadowmap Bias](https://renderdiagrams.org/2024/12/18/shadowmap-bias/)
+- WebGPU specification - [Depth stencil state](https://www.w3.org/TR/webgpu/#depth-stencil-state)
+- Microsoft Docs - [Depth Bias](https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage-depth-bias)
+- Real-Time Rendering, 4th Edition - [7.4. Shadow maps](https://www.realtimerendering.com/)
