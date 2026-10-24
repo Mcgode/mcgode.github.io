@@ -1,4 +1,4 @@
-import { vec3, vec4, positionWorld, texture, samplerComparison } from 'three/tsl';
+import { vec3, vec4, max, dot, normalWorld, positionWorld, texture, samplerComparison } from 'three/tsl';
 import { createLitMaterial } from './lit-material.js';
 
 /**
@@ -10,6 +10,7 @@ import { createLitMaterial } from './lit-material.js';
  *         shadowMap: texture_depth_2d, shadowSampler: sampler_comparison,
  *         shadowCoord: vec3<f32>,   // xy: shadow map uv, z: receiver depth in the light's 0..1 range
  *         texelSize: f32,           // size of one shadow map texel, in uv units
+ *         normalDotLight: f32,      // optional: cosine of the angle between surface normal and light, 0 at grazing angles
  *         ... any extra inputs, bound by name from `inputs` ...
  *     ) -> f32                      // 1 = fully lit, 0 = fully shadowed
  *
@@ -31,13 +32,18 @@ export function createShadowedMaterial( { pass, visibility, inputs = {}, color =
     const shadowCoord = vec3( ndc.x.mul( 0.5 ).add( 0.5 ), ndc.y.mul( - 0.5 ).add( 0.5 ), ndc.z );
 
     const shadowMap = texture( pass.depthTexture );
+    // The same N.L the shading uses; functions that do not declare `normalDotLight` simply ignore it.
+    const normalDotLight = max( dot( normalWorld.normalize(), pass.lightDirection ), 0 );
+
+    const biasFactor = pass.worldTexelSize.div( pass.worldFrustumDepth );
 
     const visibilityNode = visibility( {
         ...inputs,
         shadowMap,
         shadowSampler: samplerComparison( shadowMap ),
         shadowCoord,
-        texelSize: pass.texelSize,
+        biasFactor,
+        normalDotLight,
     } );
 
     return createLitMaterial( { lightDirection: pass.lightDirection, color, ambient, visibility: visibilityNode } );

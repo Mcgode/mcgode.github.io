@@ -1,6 +1,6 @@
 import {
     OrthographicCamera, RenderTarget, DepthTexture, Matrix4, Vector3, MeshBasicNodeMaterial,
-    LessEqualCompare, NearestFilter, LinearFilter, FrontSide,
+    LessEqualCompare, NearestFilter, LinearFilter, FrontSide, UnsignedShortType,
 } from 'three/webgpu';
 import { uniform } from 'three/tsl';
 
@@ -30,6 +30,9 @@ export class DirectionalShadowPass {
         this.depthTexture = new DepthTexture( resolution, resolution );
         this.depthTexture.compareFunction = LessEqualCompare;
         this.depthTexture.minFilter = this.depthTexture.magFilter = filter === 'linear' ? LinearFilter : NearestFilter;
+        this.depthTexture.type = UnsignedShortType;
+        /** Smallest step of the depth format (`depth16unorm`): what one unit of hardware constant bias is worth. */
+        this.depthStep = 1 / 65535;
 
         this.target = new RenderTarget( resolution, resolution, { depthBuffer: true, depthTexture: this.depthTexture } );
         // #endregion
@@ -39,13 +42,7 @@ export class DirectionalShadowPass {
         this.depthMaterial = new MeshBasicNodeMaterial();
         this.depthMaterial.colorWrite = false;
         this.depthMaterial.side = side;
-        if ( polygonOffset !== null ) {
-
-            this.depthMaterial.polygonOffset = true;
-            this.depthMaterial.polygonOffsetFactor = polygonOffset.factor;
-            this.depthMaterial.polygonOffsetUnits = polygonOffset.units;
-
-        }
+        if ( polygonOffset !== null ) this.setPolygonOffset( polygonOffset );
 
         // Uniforms read by receiver materials.
         /** World space -> light clip space. */
@@ -65,6 +62,11 @@ export class DirectionalShadowPass {
         this.lightUp = uniform( new Vector3( 0, 1, 0 ) );
         /** Side length of one texel, in world units. */
         this.worldTexelSize = uniform( 1 );
+        /** Far plane minus near plane, in world units. */
+        this.worldFrustumDepth = uniform( 1 );
+        /** Frustum width/height in world units **/
+        this.worldFrustumSize = uniform( 1 );
+        this.#updateWorldSizes();
 
     }
 
@@ -81,6 +83,39 @@ export class DirectionalShadowPass {
         this.target.setSize( resolution, resolution );
         this.texelSize.value = 1 / resolution;
         this.resolutionNode.value = resolution;
+        this.#updateWorldSizes();
+
+    }
+
+    /** Texel size and depth range in world units: they follow the frustum and the resolution, not the render. */
+    #updateWorldSizes() {
+
+        const cam = this.camera;
+        this.worldFrustumSize.value = cam.right - cam.left;
+        this.worldTexelSize.value = this.worldFrustumSize.value / this.resolution;
+        this.worldFrustumDepth.value = cam.far - cam.near;
+
+    }
+
+    /**
+     * Sets the hardware depth bias applied while rendering the map: the rasterizer offsets each triangle's depth by
+     * `factor * maxDepthSlope + units * r`, where `r` is the smallest depth step the depth format can resolve.
+     * Can be called every frame; the pipeline is only rebuilt when a value changes.
+     *
+     * @param {{ factor: number, units: number }} offset `factor` is WebGPU's `depthBiasSlopeScale`, and `units` its
+     * `depthBias` (an integer). Both 0 turns the bias off.
+     */
+    setPolygonOffset( { factor, units } ) {
+
+        const material = this.depthMaterial;
+        const roundedUnits = Math.round( units );
+        const enabled = factor !== 0 || roundedUnits !== 0;
+
+        if ( material.polygonOffset === enabled && material.polygonOffsetFactor === factor && material.polygonOffsetUnits === roundedUnits ) return;
+
+        material.polygonOffset = enabled;
+        material.polygonOffsetFactor = factor;
+        material.polygonOffsetUnits = roundedUnits;
 
     }
 
@@ -118,6 +153,8 @@ export class DirectionalShadowPass {
         cam.lookAt( center );
         cam.updateMatrixWorld();
         // #endregion
+
+        this.#updateWorldSizes();
 
     }
 
@@ -163,7 +200,6 @@ export class DirectionalShadowPass {
 
         this.inverseMatrix.value.copy( this.matrix.value ).invert();
         cam.matrixWorld.extractBasis( this.lightRight.value, this.lightUp.value, _forward );
-        this.worldTexelSize.value = ( cam.right - cam.left ) / this.resolution;
 
     }
 

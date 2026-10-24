@@ -15,6 +15,13 @@ const VIEW_OPTIONS = [
     { value: 'both', label: 'Result + shadow texels' },
 ];
 
+// Hardware depth bias, applied by the rasterizer while the shadow map is drawn (see DirectionalShadowPass.setPolygonOffset).
+// Both are in texels, so that a value looks the same at any shadow map resolution.
+const HARDWARE_BIAS_PARAMS = {
+    slopeScale: { label: 'Slope scale', min: 0, max: 10, value: 1, step: 0.1 },
+    depthBias: { label: 'Constant bias (texels)', min: 0, max: 10, value: 0.3, step: 0.1 },
+};
+
 const TEXEL_VIEWS_TOO_BIG = `The texel views draw one square per texel and are limited to ${ TexelDebugView.MAX_RESOLUTION } × ` +
     `${ TexelDebugView.MAX_RESOLUTION }. Lower the shadow map resolution to use them.`;
 
@@ -28,6 +35,7 @@ const TEXEL_VIEWS_TOO_BIG = `The texel views draw one square per texel and are l
  *   side        'front'|'back'|'double'  faces rendered into the map     (default 'front')
  *   lightControls  boolean            show azimuth/elevation sliders      (default true)
  *   resolutionControl  boolean        show the shadow map resolution slider (default true)
+ *   hardwareBias  boolean            add sliders for the rasterizer's depth bias, applied when the map is drawn (default false)
  *   view        'result' | 'texels' | 'both'  initial view; also the fixed view when `viewControl` is off (default 'result')
  *   viewControl  boolean              show the view selector: result / shadow texels (default true)
  */
@@ -37,7 +45,7 @@ export default async function shadowStep( viewport, { codeUrl, options } ) {
 
     const {
         filter = 'nearest', resolution = 2048, side = 'front', view = 'result',
-        lightControls = true, resolutionControl = true, viewControl = true,
+        lightControls = true, resolutionControl = true, viewControl = true, hardwareBias = false,
     } = options;
 
     if ( ! VIEW_OPTIONS.some( ( option ) => option.value === view ) ) {
@@ -50,6 +58,7 @@ export default async function shadowStep( viewport, { codeUrl, options } ) {
     const { values, uniforms } = viewport.setParams( {
         ...( lightControls ? LIGHT_PARAMS : {} ),
         ...( resolutionControl ? { mapResolution: resolutionParam( resolution ) } : {} ),
+        ...( hardwareBias ? HARDWARE_BIAS_PARAMS : {} ),
         ...( viewControl ? { viewMode: { label: 'View', value: view, options: VIEW_OPTIONS } } : {} ),
         ...schema,
     } );
@@ -77,6 +86,27 @@ export default async function shadowStep( viewport, { codeUrl, options } ) {
         texelView.mesh.visible = false;
 
         pass.fit( { direction, center, radius } );
+        // #region hardware-bias
+        if ( hardwareBias ) {
+
+            pass.setPolygonOffset( {
+                // We scale the slope factor by the frustum size relative to its depth range. This way, the value we
+                // pass doesn't have to account for relative changes in the depth range.
+                factor: values.slopeScale
+                    * pass.worldFrustumSize.value
+                    / pass.worldFrustumDepth.value,
+
+                // The constant bias is scaled by the depth change across one texel, as a fraction of the frustum depth
+                // range.
+                // We also scale by the step size to keep bias similar between formats
+                units: values.depthBias
+                    * pass.worldTexelSize.value
+                    / pass.worldFrustumDepth.value
+                    / pass.depthStep,
+            } );
+
+        }
+        // #endregion
         pass.render( vp.renderer, vp.scene );
 
         // View modes: the shaded result, the texel squares alone, or the squares drawn over the geometry.
