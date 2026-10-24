@@ -4,6 +4,7 @@ title: "Rendering directional shadow maps in 2026 - Part 2"
 date: 2026-10-22
 categories: [articles]
 lab: true
+math: true
 published: true
 unlisted: true
 ---
