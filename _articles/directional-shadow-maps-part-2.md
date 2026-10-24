@@ -194,7 +194,9 @@ For UNorm depth formats, it is `1/(2^bits - 1)`, where bits is the number of bit
 because the minimum depth delta is the same independently of the current depth. 
 For float formats, it is a bit more complicated, as the minimum depth delta is not constant across the primitive.
 In that case, it is set to `2^(exp(max z)-23)`.
- - if available, the depth clamp is applied to `bias` afterward. 
+ - if available, the depth clamp is applied to `bias` afterward, and works the same as our `maxBias` value from the 
+previous section.
+It should be noted that three.js does not support bias clamping, so we can't use it in the demos.
 
 In the demos, so far, I have used 16-bit UNorm depth formats, so I get `r = 1/65535`. 
 Do note that `r` only affects the constant bias, not the slope factor.
@@ -221,8 +223,6 @@ trial and error process to find the right values:
         {"src": "shadow/wgsl/base.wgsl", "prev": "shadow/wgsl/slope-bias.wgsl", "title": "Shadow visibility (we return to the original function, as the bias is pre-applied to the shadow map)"},
         {"src": "demos/shadow-step.js", "region": "hardware-bias", "title": "Hardware bias setup"}
     ]' %}
-
-It should be noted that three.js does not support bias clamping, so it is not provided as a parameter.
 
 Previous part: [Part 1]({% link _articles/directional-shadow-maps-part-1.md %}).
 Next part: [Part 3]({% link _articles/directional-shadow-maps-part-3.md %}).
