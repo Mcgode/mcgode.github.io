@@ -185,7 +185,7 @@ The APIs take to three bias parameters:
 These are the same value we used in the previous demo, but with the caveat that the formula is a bit different:<br>
 `bias = constantBias * r + slopeScaleBias * maxDepthSlope`<br>
  - `maxDepthSlope` is the maximum of the horizontal and vertical slopes of the fragment's depth value. 
-In shader code, it would be equivalent to <code>max(dpdx(depth), dpdy(depth))</code>, with the nuance that, as this 
+In shader code, it would be equivalent to `max(abs(dpdx(depth)), abs(dpdy(depth)))`, with the nuance that, as this 
 value is the same across all fragments of the same primitive, the fixed function has to compute it only once per 
 triangle.
  - `r` is a bit more complicated. It is what we call the smallest resolvable depth difference.
