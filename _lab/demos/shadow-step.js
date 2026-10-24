@@ -93,7 +93,8 @@ export default async function shadowStep( viewport, { codeUrl, options } ) {
                 factor: values.slopeScale,
                 // The constant bias is scaled by the depth change across one texel, as a fraction of the frustum depth
                 // range.
-                // We also scale by the step size to keep bias similar between formats
+                // We also scale by the step size to keep bias similar between formats.
+                // Since WebGPU takes an integer as input rather than a float, the code will round the value.
                 units: values.depthBias
                     * pass.worldTexelSize.value
                     / pass.worldFrustumDepth.value
