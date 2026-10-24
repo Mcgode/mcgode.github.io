@@ -90,12 +90,7 @@ export default async function shadowStep( viewport, { codeUrl, options } ) {
         if ( hardwareBias ) {
 
             pass.setPolygonOffset( {
-                // We scale the slope factor by the frustum size relative to its depth range. This way, the value we
-                // pass doesn't have to account for relative changes in the depth range.
-                factor: values.slopeScale
-                    * pass.worldFrustumSize.value
-                    / pass.worldFrustumDepth.value,
-
+                factor: values.slopeScale,
                 // The constant bias is scaled by the depth change across one texel, as a fraction of the frustum depth
                 // range.
                 // We also scale by the step size to keep bias similar between formats

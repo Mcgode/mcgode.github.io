@@ -64,8 +64,6 @@ export class DirectionalShadowPass {
         this.worldTexelSize = uniform( 1 );
         /** Far plane minus near plane, in world units. */
         this.worldFrustumDepth = uniform( 1 );
-        /** Frustum width/height in world units **/
-        this.worldFrustumSize = uniform( 1 );
         this.#updateWorldSizes();
 
     }
@@ -91,8 +89,7 @@ export class DirectionalShadowPass {
     #updateWorldSizes() {
 
         const cam = this.camera;
-        this.worldFrustumSize.value = cam.right - cam.left;
-        this.worldTexelSize.value = this.worldFrustumSize.value / this.resolution;
+        this.worldTexelSize.value = ( cam.right - cam.left ) / this.resolution;
         this.worldFrustumDepth.value = cam.far - cam.near;
 
     }
