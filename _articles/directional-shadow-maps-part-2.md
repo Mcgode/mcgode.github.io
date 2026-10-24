@@ -224,6 +224,14 @@ trial and error process to find the right values:
         {"src": "demos/shadow-step.js", "region": "hardware-bias", "title": "Hardware bias setup"}
     ]' %}
 
+## Receiver plane bias
+
+## Normal offset bias
+
+## Back face shadow maps, a.k.a. side-stepping the issue entirely
+
+## Summary
+
 Previous part: [Part 1]({% link _articles/directional-shadow-maps-part-1.md %}).
 Next part: [Part 3]({% link _articles/directional-shadow-maps-part-3.md %}).
 
