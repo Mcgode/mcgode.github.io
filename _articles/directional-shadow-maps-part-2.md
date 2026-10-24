@@ -93,11 +93,11 @@ known as **Peter panning** (as a nod to Peter Pan's shadow getting detached from
 
 You have to find a middle ground between getting rid of acne, and not peter panning.
 
-You will likely note that we don't get a nice and easy formula for computing an optimal bias. It's because there are 
+You will likely note that we don't get a nice and easy formula for computing an optimal bias. It's because there is 
 none. You need to find a good value by trial and error. Historically, artists have been responsible for setting up 
 bias values. These are often set per light in a scene for the best visuals.
 
-If you play around some more, You may notice that changing the resolution of the shadow map impacts the effect of bias.
+If you play around some more, you may notice that changing the resolution of the shadow map impacts the effect of bias.
 That's because the texel world size gets greater, and while the bias is not exactly in world units but depth units,
 as both are proportional to each other; the bias needs to be scaled proportionally to texel world width if you want 
 to reuse your settings across different resolutions.
@@ -118,7 +118,7 @@ be a lot more predictable.
 
 You might also notice that the higher the resolution, the lower the peter panning. 
 This is because peter panning shifting is proportional to texel size. 
-If the resolution is higher, the texel size is smaller, and thus the peter panning shift is smaller, and less 
+If the resolution is higher, the texel size is smaller, and thus the peter panning shifting is smaller, and less 
 noticeable.
 
 Finally, you may also notice that the steeper surfaces (compared to the light direction) require a higher bias to fully 
@@ -150,7 +150,7 @@ While there are variants of it, this formula is the closest to what is considere
 As you can see, it drastically reduces peter panning, as we can use much lower bias factors with it.
 
 You may note that we are using a max clamping value that provides a hard limit to the bias.
-This is because and unclamped bias can still lead to excessive peter panning when using grazing angles:
+This is because unclamped bias can still lead to excessive peter panning when using grazing angles:
 
 {% include image-compare.liquid
     before="/assets/img/articles/shadow-maps/slope-bias-clamped.png"
@@ -164,7 +164,7 @@ Do note that this tends to be an edge case, so for most cases you can keep a hig
 
 ## Hardware bias
 
-Slop-based bias has become such a mainstream approach to shadow biasing that it is natively supported by graphics APIs. 
+Slope-based bias has become such a mainstream approach to shadow biasing that it is natively supported by graphics APIs. 
 It is often referred to as "hardware bias" because it is typically implemented directly in the hardware, which can 
 provide better performance compared to software-based biasing.
 
@@ -177,12 +177,12 @@ though some APIs set it as a dynamic state (like Metal and OpenGL).
 Thankfully, the hardware bias logic specification is universal between APIs, and I would recommend you read the
 [WebGPU specification](https://www.w3.org/TR/webgpu/#depth-stencil-state) for more details.
 
-The APIs take to three bias parameters:
+The APIs take three bias parameters:
  - **Constant bias**
  - **Slope scale bias**
  - **Depth bias clamp** (optional, some APIs don't support it)
 
-These are the same value we used in the previous demo, but with the caveat that the formula is a bit different:<br>
+These are the same values we used in the previous demo, but with the caveat that the formula is a bit different:<br>
 `bias = constantBias * r + slopeScaleBias * maxDepthSlope`<br>
  - `maxDepthSlope` is the maximum of the horizontal and vertical slopes of the fragment's depth value. 
 In shader code, it would be equivalent to `max(abs(dpdx(depth)), abs(dpdy(depth)))`, with the nuance that, as this 
@@ -196,7 +196,7 @@ For float formats, it is a bit more complicated, as the minimum depth delta is n
 In that case, it is set to `2^(exp(max z)-23)`.
 
 In the demos, so far, I have used 16-bit UNorm depth formats, so I get `r = 1/65535`. 
-Do not that `r` only affects the constant bias, not the slope factor.
+Do note that `r` only affects the constant bias, not the slope factor.
 
 A point to note is that, as `maxDepthSlope` is using derivatives, it already takes the resolution into account:
 using derivatives means that this value is proportional to texel size.
