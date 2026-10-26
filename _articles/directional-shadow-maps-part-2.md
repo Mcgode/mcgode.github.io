@@ -373,11 +373,13 @@ Let's try it:
 
 You will notice that we've also added a bit of additional constant bias.
 If you set it to zero, you will see that the receiver plane bias by itself is not enough.
+This is due to both depth quantization and concave surfaces. 
+As such, a bit of additional bias is required.
 
 If you look close, you will also notice that the concave parts of the scene (like where boxes meet the surface plane)
 still have some self-shadowing artifacts, as we predicted earlier.
 
-Overall, though, it provides a pretty good result with little tweaking required, and can be combined with other 
+Overall, though, it provides a pretty good result with less tweaking required, and can be combined with other 
 techniques to provide ideal results.
 
 ### Using a normal vector
