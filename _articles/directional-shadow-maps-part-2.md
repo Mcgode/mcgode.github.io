@@ -229,11 +229,11 @@ trial and error process to find the right values:
 
 Another approach for biasing is a method called **receiver plane bias**.
 This method relies on two observations: the further a fragment is from the shadow texel center, the more it differs
-from the store depth value; and at a shadow texel granularity, the geometry surface can be approximated as a plane.
+from the stored depth value; and at a shadow texel granularity, the geometry surface can be approximated as a plane.
 
 Based on these observations, the technique biases the fragment depth value by:
  - first emulating the surface plane at the fragment position. Geometrically speaking, we retrieve the **tangent plane**.
- - computing the intersection between the plane and the ray passing at the shadow texel center
+ - computing the intersection between the plane and the light ray through the shadow texel center
  - using this intersection as the fragment depth instead.
 
 Let's illustrate this:
@@ -299,7 +299,7 @@ let dV_dXY = vec2<f32>(dpdx(shadowCoord.y), dpdy(shadowCoord.y));
 ```
 but that's not exactly what we need, which is $$\frac{\partial z}{\partial UV}$$.
 
-Thankfully, as explained in Isidoro's presentation, we have a great mathematical too to help us out: the Jacobian.
+Thankfully, as explained in Isidoro's presentation, we have a great mathematical tool to help us out: the Jacobian.
 {% include figure.liquid
     src="/assets/img/articles/shadow-maps/isidoro-jacobian.png"
     max_height=500
