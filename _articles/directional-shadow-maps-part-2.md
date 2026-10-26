@@ -376,6 +376,8 @@ techniques to provide ideal results.
 When you don't have reliable access to primitive-level derivatives, you can still use the same principles using a 
 provided normal vector.
 On average, the closer the normal vector is to the actual geometric normal, the better.
+Interpolated normals are more approximative, but usually still okay.
+Normal-mapped normals are where things tend to break a bit, so expect some artifacts.
 
 The trick here is to project that normal into the light space, so that we can reuse the same logic as in the 
 derivatives subsection.
