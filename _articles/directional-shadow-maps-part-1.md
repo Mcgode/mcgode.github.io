@@ -155,19 +155,9 @@ Now that we have our shadow map rendered, we need to project it onto the scene f
 The process is quite simple. We simply need to project the fragment world position into the light's space, so basically
 we apply the light view-projection matrix to the fragment world position:
 
-<script type="text/plain" id="inline-file-projection">
-    fn retrieveLightLocalPosition(
-        lightViewProj: mat4x4<f32>,
-        worldPos: vec3<f32>,
-    ) -> vec3<f32> {
-        let pos: vec4<f32> = lightViewProj * vec4<f32>(worldPos, 1.0);
-        return pos.xyz / pos.w;
-    }
-</script>
-
 {% include lab-code.liquid
     snippets='[
-        {"el": "#inline-file-projection", "lang": "wgsl", "title": "Retrieve light-local position"}
+        {"src": "shadow/wgsl/retrieveLightLocalPosition/light-local-position.wgsl", "title": "Retrieve light-local position"}
     ]'
 %}
 
