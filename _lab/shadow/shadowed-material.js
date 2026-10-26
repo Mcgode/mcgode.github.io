@@ -1,4 +1,4 @@
-import { vec3, vec4, max, dot, normalWorld, positionWorld, texture, samplerComparison } from 'three/tsl';
+import { vec3, max, dot, normalWorld, positionWorld, texture, samplerComparison } from 'three/tsl';
 import { createLitMaterial } from './lit-material.js';
 
 /**
@@ -20,21 +20,43 @@ import { createLitMaterial } from './lit-material.js';
  * @param {object} options
  * @param {DirectionalShadowPass} options.pass
  * @param {any} options.visibility A node created by `loadWgslFunction`.
- * @param {Record<string, any>} [options.inputs] Extra TSL nodes for the function's extra inputs, by name.
+ * @param {any} options.projection A node created by `wgslFromSource`, with the following contract:
+ *
+ *     fn retrieveLightLocalPosition(
+ *         lightViewProj: mat4x4<f32>,  // world space -> shadow coordinates (NDC-to-uv transform included)
+ *         worldPos: vec3<f32>,
+ *         worldNormal: vec3<f32>,      // optional: unit surface normal
+ *         lightDirection: vec3<f32>,   // optional: unit vector from the surface towards the light
+ *         worldTexelSize: f32,         // optional: size of one shadow map texel, in world units
+ *         ... any extra inputs, bound by name from `inputs` ...
+ *     ) -> vec3<f32>                   // shadowCoord, as expected by `shadowVisibility`
+ *
+ * @param {Record<string, any>} [options.inputs] Extra TSL nodes for the functions' extra inputs, by name.
  * @param {number|string} [options.color=0xffffff]
  * @param {number} [options.ambient=0.25]
  */
-export function createShadowedMaterial( { pass, visibility, inputs = {}, color = 0xffffff, ambient = 0.25 } ) {
+export function createShadowedMaterial( { pass, visibility, projection, inputs = {}, color = 0xffffff, ambient = 0.25 } ) {
 
-    const shadowCoord = pass.lightMatrix.mul( vec4( positionWorld, 1 ) ).xyz;
+    const worldNormal = normalWorld.normalize();
+
+    // Where the receiver lands in the shadow map: xy is the uv, z the depth. The function is swappable, so that
+    // article steps can change how the receiver is projected (e.g. normal offset bias).
+    const shadowCoord = projection( {
+        ...inputs,
+        lightMatrix: pass.lightMatrix,
+        worldPos: positionWorld,
+        worldNormal,
+        lightDirection: pass.lightDirection,
+        worldTexelSize: pass.worldTexelSize,
+    } );
 
     const shadowMap = texture( pass.depthTexture );
     // The same N.L the shading uses; functions that do not declare `normalDotLight` simply ignore it.
-    const normalDotLight = max( dot( normalWorld.normalize(), pass.lightDirection ), 0 );
+    const normalDotLight = max( dot( worldNormal, pass.lightDirection ), 0 );
 
     const biasFactor = pass.worldTexelSize.div( pass.worldFrustumDepth );
 
-    const shadowNormal = pass.lightNormalMatrix.mul( normalWorld.normalize() );
+    const shadowNormal = pass.lightNormalMatrix.mul( worldNormal );
 
     const visibilityNode = visibility( {
         ...inputs,

@@ -1,6 +1,8 @@
 import { Vector3, FrontSide, BackSide, DoubleSide } from 'three/webgpu';
 import { DirectionalShadowPass } from '../shadow/directional-shadow-pass.js';
-import { loadWgslFunction } from '../shadow/wgsl-loader.js';
+import { loadWgslFunction, wgslFunctionFromText } from '../shadow/wgsl-loader.js';
+import lightLocalPosition from '../shadow/wgsl/retrieveLightLocalPosition/light-local-position.wgsl';
+import normalOffsetPosition from '../shadow/wgsl/retrieveLightLocalPosition/normal-offset-position.wgsl';
 import { createShadowedMaterial } from '../shadow/shadowed-material.js';
 import { buildShowcaseScene } from '../shadow/showcase-scene.js';
 import { TexelDebugView } from '../shadow/texel-debug-view.js';
@@ -36,6 +38,7 @@ const TEXEL_VIEWS_TOO_BIG = `The texel views draw one square per texel and are l
  *   lightControls  boolean            show azimuth/elevation sliders      (default true)
  *   resolutionControl  boolean        show the shadow map resolution slider (default true)
  *   hardwareBias  boolean            add sliders for the rasterizer's depth bias, applied when the map is drawn (default false)
+ *   normalOffset  boolean            project the receiver with `retrieveLightLocalPosition` offset along its normal, and add its slider (default false)
  *   view        'result' | 'texels' | 'both'  initial view; also the fixed view when `viewControl` is off (default 'result')
  *   viewControl  boolean              show the view selector: result / shadow texels (default true)
  */
@@ -46,6 +49,7 @@ export default async function shadowStep( viewport, { codeUrl, options } ) {
     const {
         filter = 'nearest', resolution = 2048, side = 'front', view = 'result',
         lightControls = true, resolutionControl = true, viewControl = true, hardwareBias = false,
+        normalOffset = false,
     } = options;
 
     if ( ! VIEW_OPTIONS.some( ( option ) => option.value === view ) ) {
@@ -54,20 +58,22 @@ export default async function shadowStep( viewport, { codeUrl, options } ) {
 
     }
 
-    const { fn: visibility, schema } = await loadWgslFunction( codeUrl );
+    const { fn: visibility, schema: visibilitySchema } = await loadWgslFunction( codeUrl );
+    const { fn: projection, schema: projectionSchema } = wgslFunctionFromText( normalOffset ? normalOffsetPosition : lightLocalPosition );
     const { values, uniforms } = viewport.setParams( {
         ...( lightControls ? LIGHT_PARAMS : {} ),
         ...( resolutionControl ? { mapResolution: resolutionParam( resolution ) } : {} ),
         ...( hardwareBias ? HARDWARE_BIAS_PARAMS : {} ),
         ...( viewControl ? { viewMode: { label: 'View', value: view, options: VIEW_OPTIONS } } : {} ),
-        ...schema,
+        ...projectionSchema,
+        ...visibilitySchema,
     } );
 
     const initialResolution = resolutionControl ? 2 ** values.mapResolution : resolution;
     const pass = new DirectionalShadowPass( { resolution: initialResolution, filter, side: SIDES[ side ] ?? FrontSide } );
 
     const { group, center, radius } = buildShowcaseScene( ( color ) =>
-        createShadowedMaterial( { pass, visibility, inputs: uniforms, color } ) );
+        createShadowedMaterial( { pass, visibility, projection, inputs: uniforms, color } ) );
     viewport.scene.add( group );
 
     const texelView = new TexelDebugView( pass );
