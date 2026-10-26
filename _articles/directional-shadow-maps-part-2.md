@@ -424,6 +424,7 @@ let bitangent = cross(normal, tangent);
 You can use their projection into shadow space to compute $$\frac {\partial z} {\partial UV}$$:
 ```wgsl
 // Where one world unit along each tangent lands in shadowCoord space
+// (we assume that the ndc-to-uv transform is included in `lightSpaceMatrix`)
 let d1 = (lightSpaceMatrix * vec4<f32>(worldPosition + tangent, 1.0)).xyz - shadowCoord;
 let d2 = (lightSpaceMatrix * vec4<f32>(worldPosition + bitangent, 1.0)).xyz - shadowCoord;
 
