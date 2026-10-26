@@ -243,6 +243,15 @@ Let's illustrate this:
     max_height=500
     caption="Flat surface situation visualized" %}
 
+- $$F$$ is the fragment position.
+- $$\vec N$$ is the surface normal at $$F$$.
+- $$\vec T$$ is the tangent vector of the surface at $$F$$.
+- $$S$$ is the surface point stored in the shadow map.
+- $$P$$ is the intersection between the tangent plane and the light ray through $$S$$.
+- $$\Delta x$$ is the distance between $$F$$ and $$P$$, projected onto the shadow plane.
+- $$\Delta z$$ is the computed bias.
+- $$\epsilon$$ is the final bias error.
+
 With a flat surface, we get a perfect bias. That's pretty nice. But in practice we don't often get flat surfaces,
 so let's see what we get with a curved surface. First, let's look at a convex one:
 
