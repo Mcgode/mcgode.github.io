@@ -26,16 +26,15 @@ import { createLitMaterial } from './lit-material.js';
  */
 export function createShadowedMaterial( { pass, visibility, inputs = {}, color = 0xffffff, ambient = 0.25 } ) {
 
-    const lightClip = pass.matrix.mul( vec4( positionWorld, 1 ) );
-    const ndc = lightClip.xyz.div( lightClip.w );
-    // NDC y points up, texture v points down.
-    const shadowCoord = vec3( ndc.x.mul( 0.5 ).add( 0.5 ), ndc.y.mul( - 0.5 ).add( 0.5 ), ndc.z );
+    const shadowCoord = pass.lightMatrix.mul( vec4( positionWorld, 1 ) ).xyz;
 
     const shadowMap = texture( pass.depthTexture );
     // The same N.L the shading uses; functions that do not declare `normalDotLight` simply ignore it.
     const normalDotLight = max( dot( normalWorld.normalize(), pass.lightDirection ), 0 );
 
     const biasFactor = pass.worldTexelSize.div( pass.worldFrustumDepth );
+
+    const shadowNormal = pass.lightNormalMatrix.mul( normalWorld.normalize() );
 
     const visibilityNode = visibility( {
         ...inputs,
@@ -44,6 +43,8 @@ export function createShadowedMaterial( { pass, visibility, inputs = {}, color =
         shadowCoord,
         biasFactor,
         normalDotLight,
+        shadowNormal,
+        shadowResolution: pass.resolutionNode,
     } );
 
     return createLitMaterial( { lightDirection: pass.lightDirection, color, ambient, visibility: visibilityNode } );

@@ -1,11 +1,18 @@
 import {
-    OrthographicCamera, RenderTarget, DepthTexture, Matrix4, Vector3, MeshBasicNodeMaterial,
+    OrthographicCamera, RenderTarget, DepthTexture, Matrix4, Matrix3, Vector3, MeshBasicNodeMaterial,
     LessEqualCompare, NearestFilter, LinearFilter, FrontSide, UnsignedShortType,
 } from 'three/webgpu';
 import { uniform } from 'three/tsl';
 
 const _dir = new Vector3();
 const _forward = new Vector3();
+// Light clip space -> shadow coordinates: uv in 0..1 (v points down), depth is kept as is.
+const _clipToShadowCoord = new Matrix4().set(
+    0.5, 0, 0, 0.5,
+    0, -0.5, 0, 0.5,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+);
 
 /**
  * Renders a scene's depth from a directional light into a depth texture, and exposes what a receiver
@@ -47,6 +54,8 @@ export class DirectionalShadowPass {
         // Uniforms read by receiver materials.
         /** World space -> light clip space. */
         this.matrix = uniform( new Matrix4() );
+        this.lightMatrix = uniform( new Matrix4() );
+        this.lightNormalMatrix = uniform( new Matrix3() );
         /** Size of one shadow map texel, in uv units. */
         this.texelSize = uniform( 1 / resolution );
         /** Unit vector pointing from the surface towards the light. */
@@ -194,6 +203,8 @@ export class DirectionalShadowPass {
         // #endregion
 
         this.matrix.value.multiplyMatrices( cam.projectionMatrix, cam.matrixWorldInverse );
+        this.lightMatrix.value.multiplyMatrices( _clipToShadowCoord, this.matrix.value );
+        this.lightNormalMatrix.value.getNormalMatrix( this.lightMatrix.value );
 
         this.inverseMatrix.value.copy( this.matrix.value ).invert();
         cam.matrixWorld.extractBasis( this.lightRight.value, this.lightUp.value, _forward );

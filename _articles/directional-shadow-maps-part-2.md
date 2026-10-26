@@ -227,6 +227,212 @@ trial and error process to find the right values:
 
 ## Receiver plane bias
 
+Another approach for biasing is a method called **receiver plane bias**.
+This method relies on two observations: the further a fragment is from the shadow texel center, the more it differs
+from the store depth value; and at a shadow texel granularity, the geometry surface can be approximated as a plane.
+
+Based on these observations, the technique biases the fragment depth value by:
+ - first emulating the surface plane at the fragment position. Geometrically speaking, we retrieve the **tangent plane**.
+ - computing the intersection between the plane and the ray passing at the shadow texel center
+ - using this intersection as the fragment depth instead.
+
+Let's illustrate this:
+
+{% include figure.liquid 
+    src="/assets/img/articles/shadow-maps/receiver-plane-planar.svg"
+    max_height=500
+    caption="Flat surface situation visualized" %}
+
+With a flat surface, we get a perfect bias. That's pretty nice. But in practice we don't often get flat surfaces,
+so let's see what we get with a curved surface. First, let's look at a convex one:
+
+{% include figure.liquid 
+    src="/assets/img/articles/shadow-maps/receiver-plane-curved.svg"
+    max_height=500
+    caption="Convex curved surface situation visualized" %}
+
+Now we can see that we get some slight over-biasing, which is not ideal, but should be acceptable.
+Let's now see a concave surface:
+
+{% include figure.liquid 
+    src="/assets/img/articles/shadow-maps/receiver-plane-concave.svg"
+    max_height=500
+    caption="Concave curved surface situation visualized" %}
+
+Yeah... It was predictable, but sadly it is under-biasing. 
+But it still helps in reducing the shadow acne, and with a bit more bias we can cover for situations like this.
+
+Now let's see how we implement it shader-wise. 
+There are two approaches to achieve it: using screen-space derivatives or manually calculating the tangent plane.
+
+### Using screen-space derivatives
+
+<div class="alert alert-info" role="alert">
+This approach is best suited for situations where you get proper primitive screen-space derivatives.
+As such it works great in forward rendering pipelines, but is not recommended for deferred rendering pipelines
+(unless you have access to primitive-level geometry data using something like a visibility buffer).
+</div>
+
+This is the original approach, as presented by John Isidoro back in 2006 at GDC.
+
+Basically, we want to retrieve
+
+$$
+b = \overrightarrow{CS} \cdot \frac{\partial z}{\partial UV}
+$$
+
+where $$b$$ is the receiver plane bias, $$\overrightarrow{CS}$$ is the UV-space vector from the texel center to the fragment shadow 
+coordinates, and $$\frac{\partial z}{\partial UV}$$ is the partial derivative of the depth value in the UV-space.
+
+$$\overrightarrow{CS}$$ is the easy part, as we can easily retrieve it from the shadow coords and the shadow map 
+resolution:
+```wgsl
+let distanceToCenterUv = (fract(shadowCoord.xy * shadowResolution) - 0.5) / shadowResolution;
+```
+
+The partial derivative is a bit more tricky. With screen-space derivatives, we can get 
+$$\frac{\partial z}{\partial XY}$$, $$\frac {\partial U} {\partial XY}$$ and $$\frac {\partial V} {\partial XY}$$:
+```wgsl
+let dz_dXY = vec2<f32>(dpdx(shadowCoord.z), dpdy(shadowCoord.z));
+let dU_dXY = vec2<f32>(dpdx(shadowCoord.x), dpdy(shadowCoord.x));
+let dV_dXY = vec2<f32>(dpdx(shadowCoord.y), dpdy(shadowCoord.y));
+```
+but that's not exactly what we need, which is $$\frac{\partial z}{\partial UV}$$.
+
+Thankfully, as explained in Isidoro's presentation, we have a great mathematical too to help us out: the Jacobian.
+{% include figure.liquid
+    src="/assets/img/articles/shadow-maps/isidoro-jacobian.png"
+    max_height=500
+    caption="Courtesy of GDC Vault" %}
+(do note that the slide uses $$d$$ instead of $$z$$ like we do)
+
+Let's develop that inverse transpose:
+
+$$
+\def\arraystretch{3}
+\def\p#1#2{\dfrac{\partial #1}{\partial #2}}
+\begin{bmatrix}
+\p{U}{X} & \quad \p{U}{Y} \\
+\p{V}{X} & \quad \p{V}{Y}
+\end{bmatrix}^{-T}
+\quad = \quad
+\dfrac{1}{\p{U}{X} \cdot \p{V}{Y} \; - \; \p{U}{Y} \cdot \p{V}{X}}
+\quad
+\begin{bmatrix}
+\p{V}{Y} & \quad -\p{U}{Y} \\
+-\p{V}{X} & \quad \p{U}{X}
+\end{bmatrix}^T 
+\\
+\quad = \quad
+\dfrac{1}{\p{U}{X} \cdot \p{V}{Y} \; - \; \p{U}{Y} \cdot \p{V}{X}}
+\quad
+\begin{bmatrix}
+\p{V}{Y} & \quad -\p{V}{X} \\
+-\p{U}{Y} & \quad \p{U}{X}
+\end{bmatrix}
+$$
+
+That determinant can be zero, which happens only when the plane normal is perpendicular to the light direction.
+Usually, that means that $$N \cdot L = 0$$, so for most cases we can ignore bias.
+
+In shader code, this is translated to:
+```wgsl
+let det = dU_dXY.x * dV_dXY.y - dU_dXY.y * dV_dXY.x;
+
+var dz_dUV = vec2<f32>(0.0, 0.0);
+if (det != 0.0) {
+    dz_dUV.x = dot(dz_dXY, vec2<f32>(dV_dXY.y, -dV_dXY.x)) / det;
+    dz_dUV.y = dot(dz_dXY, vec2<f32>(-dU_dXY.y, dU_dXY.x)) / det;
+}
+```
+
+We can then complete the formula:
+```wgsl
+let bias = dot(dz_dUV, distanceToCenterUv);
+```
+
+Let's try it:
+{% include lab-viewport.liquid
+    demo="shadow-step"
+    code="shadow/wgsl/derivatives-receiver-plane.wgsl"
+    options='{"filter":"nearest"}' %}
+{% include lab-code.liquid
+    snippets='[
+        {"src": "shadow/wgsl/derivatives-receiver-plane.wgsl", "prev": "shadow/wgsl/base.wgsl", "title": "Shadow visibility"}
+    ]' %}
+<br>
+
+You will notice that we've also added a bit of additional constant bias.
+If you set it to zero, you will see that the receiver plane bias by itself is not enough.
+
+If you look close, you will also notice that the concave parts of the scene (like where boxes meet the surface plane)
+still have some self-shadowing artifacts, as we predicted earlier.
+
+Overall, though, it provides a pretty good result with little tweaking required, and can be combined with other 
+techniques to provide ideal results.
+
+### Using a normal vector
+
+When you don't have reliable access to primitive-level derivatives, you can still use the same principles using a 
+provided normal vector.
+On average, the closer the normal vector is to the actual geometric normal, the better.
+
+The trick here is to project that normal into the light space, so that we can reuse the same logic as in the 
+derivatives subsection.
+```wgsl
+let dz_dUV = -shadowNormal.xy / shadowNormal.z;
+```
+
+The question then becomes: How do we retrieve that normal vector in the first place? 
+Since the light projection is an orthographic matrix, we can directly use the transpose inverse of the light-space
+matrix (combined with the NDC-to-UV transform matrix) as a normal matrix and apply it directly.
+
+If, instead, you use the light view-projection matrix (and manually apply the ndc-to-uv transform), then do not forget
+to apply a `(2, -2, 1)` scale to the "shadow normal" after applying the normal matrix to it. 
+
+{% include lab-viewport.liquid
+    demo="shadow-step"
+    code="shadow/wgsl/normal-receiver-plane.wgsl"
+    options='{"filter":"nearest"}' %}
+{% include lab-code.liquid
+    snippets='[
+        {"src": "shadow/wgsl/normal-receiver-plane.wgsl", "prev": "shadow/wgsl/derivatives-receiver-plane.wgsl", "title": "Shadow visibility"}
+    ]' %}
+
+I used this opportunity to also apply slope-based bias to show off how all techniques can be combined.
+
+If you don't have the possibility of providing the light normal matrix, there is an alternative approach using the 
+tangent and bitangent vectors. 
+You can even generate some on the fly if need be:
+```wgsl
+fn generateTangentAndBitangent(normal: vec3<f32>) -> (vec3<f32>, vec3<f32>) {
+    let v = select(vec3<f32>(0.0, 1.0, 0.0), vec3<f32>(1.0, 0.0, 0.0), abs(normal.y) > 0.99);
+    let tangent = normalize(cross(normal, v));
+    let bitangent = cross(normal, tangent);
+    return (tangent, bitangent);
+}
+```
+
+You can use their projection into shadow space to compute $$\frac {\partial z} {\partial UV}$$:
+```wgsl
+// Where one world unit along each tangent lands in shadowCoord space
+let d1 = (lightSpaceMatrix * vec4<f32>(worldPosition + tangent, 1.0)).xyz - shadowCoord;
+let d2 = (lightSpaceMatrix * vec4<f32>(worldPosition + bitangent, 1.0)).xyz - shadowCoord;
+
+// dz = g.x * du + g.y * dv holds for both tangents, so solve for g = dz/d(u,v)
+let det = d1.x * d2.y - d1.y * d2.x;
+var dz_dUV = vec2<f32>(0.0);
+if (abs(det) > 1e-8) {
+    dz_dUV = vec2<f32>(
+        d1.z * d2.y - d1.y * d2.z,
+        d1.x * d2.z - d1.z * d2.x
+    ) / det;
+}
+```
+
+While it allows you to avoid having to produce and fetch a normal matrix, it is achieved at the cost of an additional 
+matrix multiplication.
+
 ## Normal offset bias
 
 ## Back face shadow maps, a.k.a. side-stepping the issue entirely
@@ -243,3 +449,4 @@ Next part: [Part 3]({% link _articles/directional-shadow-maps-part-3.md %}).
 - WebGPU specification - [Depth stencil state](https://www.w3.org/TR/webgpu/#depth-stencil-state)
 - Microsoft Docs - [Depth Bias](https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage-depth-bias)
 - Real-Time Rendering, 4th Edition - [7.4. Shadow maps](https://www.realtimerendering.com/)
+- [Shadow mapping tricks and techniques](https://gdcvault.com/play/1013442/Shadow-Mapping-Tricks-and), John Isidoro, GDC 2006.
