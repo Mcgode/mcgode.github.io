@@ -407,12 +407,9 @@ If you don't have the possibility of providing the light normal matrix, there is
 tangent and bitangent vectors. 
 You can even generate some on the fly if need be:
 ```wgsl
-fn generateTangentAndBitangent(normal: vec3<f32>) -> (vec3<f32>, vec3<f32>) {
-    let v = select(vec3<f32>(0.0, 1.0, 0.0), vec3<f32>(1.0, 0.0, 0.0), abs(normal.y) > 0.99);
-    let tangent = normalize(cross(normal, v));
-    let bitangent = cross(normal, tangent);
-    return (tangent, bitangent);
-}
+let v = select(vec3<f32>(0.0, 1.0, 0.0), vec3<f32>(1.0, 0.0, 0.0), abs(normal.y) > 0.99);
+let tangent = normalize(cross(normal, v));
+let bitangent = cross(normal, tangent);
 ```
 
 You can use their projection into shadow space to compute $$\frac {\partial z} {\partial UV}$$:
