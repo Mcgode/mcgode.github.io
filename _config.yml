@@ -29,6 +29,9 @@ linkedin_username: max-godefroy-192490161
 
 # Build settings
 theme: minima
+kramdown:
+  # No server-side engine: kramdown emits `$$...$$` as <span/div class="kdmath"> for client-side KaTeX (see head.liquid)
+  math_engine: ~
 plugins:
   - jekyll-feed
   - jekyll-seo-tag

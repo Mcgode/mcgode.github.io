@@ -1,11 +1,18 @@
 import {
-    OrthographicCamera, RenderTarget, DepthTexture, Matrix4, Vector3, MeshBasicNodeMaterial,
-    LessEqualCompare, NearestFilter, LinearFilter, FrontSide,
+    OrthographicCamera, RenderTarget, DepthTexture, Matrix4, Matrix3, Vector3, MeshBasicNodeMaterial,
+    LessEqualCompare, NearestFilter, LinearFilter, FrontSide, UnsignedShortType,
 } from 'three/webgpu';
 import { uniform } from 'three/tsl';
 
 const _dir = new Vector3();
 const _forward = new Vector3();
+// Light clip space -> shadow coordinates: uv in 0..1 (v points down), depth is kept as is.
+const _clipToShadowCoord = new Matrix4().set(
+    0.5, 0, 0, 0.5,
+    0, -0.5, 0, 0.5,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+);
 
 /**
  * Renders a scene's depth from a directional light into a depth texture, and exposes what a receiver
@@ -30,6 +37,9 @@ export class DirectionalShadowPass {
         this.depthTexture = new DepthTexture( resolution, resolution );
         this.depthTexture.compareFunction = LessEqualCompare;
         this.depthTexture.minFilter = this.depthTexture.magFilter = filter === 'linear' ? LinearFilter : NearestFilter;
+        this.depthTexture.type = UnsignedShortType;
+        /** Smallest step of the depth format (`depth16unorm`): what one unit of hardware constant bias is worth. */
+        this.depthStep = 1 / 65535;
 
         this.target = new RenderTarget( resolution, resolution, { depthBuffer: true, depthTexture: this.depthTexture } );
         // #endregion
@@ -39,17 +49,13 @@ export class DirectionalShadowPass {
         this.depthMaterial = new MeshBasicNodeMaterial();
         this.depthMaterial.colorWrite = false;
         this.depthMaterial.side = side;
-        if ( polygonOffset !== null ) {
-
-            this.depthMaterial.polygonOffset = true;
-            this.depthMaterial.polygonOffsetFactor = polygonOffset.factor;
-            this.depthMaterial.polygonOffsetUnits = polygonOffset.units;
-
-        }
+        if ( polygonOffset !== null ) this.setPolygonOffset( polygonOffset );
 
         // Uniforms read by receiver materials.
         /** World space -> light clip space. */
         this.matrix = uniform( new Matrix4() );
+        this.lightMatrix = uniform( new Matrix4() );
+        this.lightNormalMatrix = uniform( new Matrix3() );
         /** Size of one shadow map texel, in uv units. */
         this.texelSize = uniform( 1 / resolution );
         /** Unit vector pointing from the surface towards the light. */
@@ -65,6 +71,9 @@ export class DirectionalShadowPass {
         this.lightUp = uniform( new Vector3( 0, 1, 0 ) );
         /** Side length of one texel, in world units. */
         this.worldTexelSize = uniform( 1 );
+        /** Far plane minus near plane, in world units. */
+        this.worldFrustumDepth = uniform( 1 );
+        this.#updateWorldSizes();
 
     }
 
@@ -81,6 +90,38 @@ export class DirectionalShadowPass {
         this.target.setSize( resolution, resolution );
         this.texelSize.value = 1 / resolution;
         this.resolutionNode.value = resolution;
+        this.#updateWorldSizes();
+
+    }
+
+    /** Texel size and depth range in world units: they follow the frustum and the resolution, not the render. */
+    #updateWorldSizes() {
+
+        const cam = this.camera;
+        this.worldTexelSize.value = ( cam.right - cam.left ) / this.resolution;
+        this.worldFrustumDepth.value = cam.far - cam.near;
+
+    }
+
+    /**
+     * Sets the hardware depth bias applied while rendering the map: the rasterizer offsets each triangle's depth by
+     * `factor * maxDepthSlope + units * r`, where `r` is the smallest depth step the depth format can resolve.
+     * Can be called every frame; the pipeline is only rebuilt when a value changes.
+     *
+     * @param {{ factor: number, units: number }} offset `factor` is WebGPU's `depthBiasSlopeScale`, and `units` its
+     * `depthBias` (an integer). Both 0 turns the bias off.
+     */
+    setPolygonOffset( { factor, units } ) {
+
+        const material = this.depthMaterial;
+        const roundedUnits = Math.round( units );
+        const enabled = factor !== 0 || roundedUnits !== 0;
+
+        if ( material.polygonOffset === enabled && material.polygonOffsetFactor === factor && material.polygonOffsetUnits === roundedUnits ) return;
+
+        material.polygonOffset = enabled;
+        material.polygonOffsetFactor = factor;
+        material.polygonOffsetUnits = roundedUnits;
 
     }
 
@@ -118,6 +159,8 @@ export class DirectionalShadowPass {
         cam.lookAt( center );
         cam.updateMatrixWorld();
         // #endregion
+
+        this.#updateWorldSizes();
 
     }
 
@@ -160,10 +203,11 @@ export class DirectionalShadowPass {
         // #endregion
 
         this.matrix.value.multiplyMatrices( cam.projectionMatrix, cam.matrixWorldInverse );
+        this.lightMatrix.value.multiplyMatrices( _clipToShadowCoord, this.matrix.value );
+        this.lightNormalMatrix.value.getNormalMatrix( this.lightMatrix.value );
 
         this.inverseMatrix.value.copy( this.matrix.value ).invert();
         cam.matrixWorld.extractBasis( this.lightRight.value, this.lightUp.value, _forward );
-        this.worldTexelSize.value = ( cam.right - cam.left ) / this.resolution;
 
     }
 

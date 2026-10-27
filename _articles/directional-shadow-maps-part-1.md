@@ -5,7 +5,7 @@ date: 2026-10-22
 categories: [articles]
 lab: true
 published: true
-unlisted: true
+math: true
 ---
 
 ![Illustration](/assets/img/articles/shadow-maps/illustration.png)
@@ -154,19 +154,9 @@ Now that we have our shadow map rendered, we need to project it onto the scene f
 The process is quite simple. We simply need to project the fragment world position into the light's space, so basically
 we apply the light view-projection matrix to the fragment world position:
 
-<script type="text/plain" id="inline-file-projection">
-    fn retrieveLightLocalPosition(
-        lightViewProj: mat4x4<f32>,
-        worldPos: vec3<f32>,
-    ) -> vec3<f32> {
-        let pos: vec4<f32> = lightViewProj * vec4<f32>(worldPos, 1.0);
-        return pos.xyz / pos.w;
-    }
-</script>
-
 {% include lab-code.liquid
     snippets='[
-        {"el": "#inline-file-projection", "lang": "wgsl", "title": "Retrieve light-local position"}
+        {"src": "shadow/wgsl/retrieveLightLocalPosition/light-local-position.wgsl", "title": "Retrieve light-local position"}
     ]'
 %}
 
@@ -215,7 +205,7 @@ The comparison sampler has the added benefit of allowing for hardware accelerati
 <script type="text/plain" id="inline-file-apply-visibility">
     var directLight: vec3<f32> = computeLight( position, normal, light );
 
-    let ndcShadowCoords: vec3<f32> = retrieveLightLocalPosition( light.viewProj, position );
+    let ndcShadowCoords: vec3<f32> = retrieveLightLocalPosition( light.matrix, position );
     let shadowCoords: vec3<f32> = vec3<f32>( ndcToUv( ndcShadowCoords.xy ), ndcShadowCoords.z );
     // Modulate direct light by shadow visibility.
     directLight *= shadowVisibility( shadowMap, shadowSampler, shadowCoords );
@@ -229,6 +219,20 @@ The comparison sampler has the added benefit of allowing for hardware accelerati
 %}
 
 <br>
+
+Alternatively, we can pre-apply the NDC-to-UV transform to the light-space matrix to avoid having to
+do the transform in the shader.
+$$
+L = 
+\begin{bmatrix}
+    \frac{1}{2} & 0 & 0 & \frac{1}{2} \\
+    0 & -\frac{1}{2} & 0 & \frac{1}{2} \\
+    0 & 0 & 1 & 0 \\
+    0 & 0 & 0 & 1
+\end{bmatrix}
+\cdot {P}_{light}
+\cdot {V}_{light}
+$$
 
 Let's see what we get:
 

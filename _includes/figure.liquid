@@ -2,6 +2,9 @@
   <img
     src="{{ include.src }}"
     class="figure-img img-fluid"
+    {% if include.max_height %}
+      style="max-height: {{ include.max_height }}px;"
+    {% endif %}
     {% if include.alt %}
       alt="{{ include.alt }}"
     {% endif %}

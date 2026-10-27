@@ -1,0 +1,45 @@
+{%- comment -%}
+  Before/after image comparison with a draggable slider. Works on any page.
+
+  Usage:
+    {% include image-compare.liquid
+         before="/assets/img/articles/shadow-maps/slope-bias-clamped.png"
+         after="/assets/img/articles/shadow-maps/slope-bias-unclamped.png"
+         before_label="Clamped"
+         after_label="Unclamped"
+         alt="Floor shadows with and without the bias clamp"
+         caption="Drag the slider, or focus it and use the arrow keys." %}
+
+  before        image shown on the left of the slider (required)
+  after         image shown on the right of the slider (required)
+  before_label  small tag over the left image
+  after_label   small tag over the right image
+  alt           description of the pair, used on both images
+  before_alt    overrides `alt` for the left image
+  after_alt     overrides `alt` for the right image
+  start         initial slider position, 0 to 100 (default 50)
+  caption       text under the comparison
+
+  Both images should have the same dimensions: the widget is as tall as the taller image, and they share one frame.
+{%- endcomment -%}
+{%- comment -%} `assign` is global to the page, so the stylesheet and script are only added by the first comparison. {%- endcomment -%}
+{%- unless image_compare_loaded -%}
+<link rel="stylesheet" href="{{ '/assets/css/image-compare.css' | relative_url }}">
+<script src="{{ '/assets/js/image-compare.js' | relative_url }}" defer></script>
+{%- assign image_compare_loaded = true -%}
+{%- endunless -%}
+{%- assign compare_start = include.start | default: 50 -%}
+<figure class="figure compare-figure">
+  <div class="compare" style="--pos: {{ compare_start }}%">
+    <img class="compare-img compare-after" src="{{ include.after | relative_url }}" alt="{{ include.after_alt | default: include.alt | escape }}" draggable="false">
+    <img class="compare-img compare-before" src="{{ include.before | relative_url }}" alt="{{ include.before_alt | default: include.alt | escape }}" draggable="false">
+    {%- if include.before_label %}<span class="compare-tag compare-tag-before">{{ include.before_label }}</span>{% endif %}
+    {%- if include.after_label %}<span class="compare-tag compare-tag-after">{{ include.after_label }}</span>{% endif %}
+    <span class="compare-handle" aria-hidden="true"></span>
+    <input class="compare-slider" type="range" min="0" max="100" step="any" value="{{ compare_start }}"
+           aria-label="Comparison position{% if include.before_label and include.after_label %}: {{ include.before_label | escape }} on the left, {{ include.after_label | escape }} on the right{% endif %}">
+  </div>
+  {%- if include.caption %}
+  <figcaption class="figure-caption">{{ include.caption }}</figcaption>
+  {%- endif %}
+</figure>

@@ -10,6 +10,7 @@ import { DirectionalLightGizmo } from '../shadow/directional-light-gizmo.js';
 import { LIGHT_PARAMS, lightDirectionFromParams } from '../shadow/light-controls.js';
 import { resolutionParam } from '../shadow/resolution-control.js';
 import hardShadowSource from '../shadow/wgsl/00-hard.wgsl';
+import lightLocalPosition from '../shadow/wgsl/retrieveLightLocalPosition/light-local-position.wgsl';
 
 const MIN_EXTENT = 0.5; // Smallest allowed frustum width, height and depth, in world units.
 
@@ -96,6 +97,7 @@ export default function lightCamera( viewport, { options } ) {
     const { view = 'final', resolution = 1024, shadows = false } = options;
 
     const shadowLookup = shadows ? wgslFunctionFromText( hardShadowSource ) : null;
+    const projection = shadows ? wgslFunctionFromText( lightLocalPosition ) : null;
     const { values, uniforms } = viewport.setParams( {
         viewMode: viewParam( view ),
         ...LIGHT_PARAMS,
@@ -107,7 +109,7 @@ export default function lightCamera( viewport, { options } ) {
     const pass = new DirectionalShadowPass( { resolution: 2 ** values.mapResolution } );
 
     const { group, center } = buildShowcaseScene( ( color ) => shadows
-        ? createShadowedMaterial( { pass, visibility: shadowLookup.fn, inputs: uniforms, color } )
+        ? createShadowedMaterial( { pass, visibility: shadowLookup.fn, projection: projection.fn, inputs: uniforms, color } )
         : createLitMaterial( { lightDirection: pass.lightDirection, color } ) );
     viewport.scene.add( group );
 
