@@ -2,7 +2,9 @@
 layout: post
 title:  "Rewind time in real-time"
 date:   2023-05-24
-categories: articles
+categories: [articles]
+description: "How I implemented a real-time time rewind mechanic for rigid bodies in a game prototype, and how it compares to the rewind ability in Zelda: Tears of the Kingdom."
+image: /assets/img/articles/time-rewind/exp-threshold.png
 ---
 
 The main feature of my [Project: Merge](/portfolio/project-merge) old game prototype is its time rewind
@@ -17,7 +19,7 @@ Here's a quick demo:
 <br>
 
 So when I saw a very similar mechanic in the latest Legend of Zelda game, I was quite intrigued:
-![TotK rewind](/assets/img/articles/time-rewind/totk-rewind.gif)
+![Rewinding an object in Zelda: Tears of the Kingdom](/assets/img/articles/time-rewind/totk-rewind.gif)
 
 As such, I plan on detailing my own implementation and then compare it to what we see in that game. 
 While it isn't unlikely that the devs at Nintendo went in a completely different direction, I believe it 
@@ -173,7 +175,7 @@ the ones from the latest saved state. If they differ too much, the current state
 To be more specific I check if the change in direction and relative norm goes beyond a certain threshold for each one. 
 As for the threshold itself, I actually use a varying threshold based on an exponential falloff based on the time 
 passed since the last state save:
-![Threshold function](/assets/img/articles/time-rewind/exp-threshold.png)
+![Plot of the exponential threshold function](/assets/img/articles/time-rewind/exp-threshold.png)
 
 This allows the system to save slight changes over longer periods of time while avoiding over-saving when you have a 
 very quick succession of changes.
@@ -186,7 +188,7 @@ appropriate parameters, which are not obvious and will require a lot of iteratio
 ## How does the Zelda version compare ?
 
 Let's just roll it again here:
-![TotK rewind](/assets/img/articles/time-rewind/totk-rewind.gif)
+![Rewinding an object in Zelda: Tears of the Kingdom](/assets/img/articles/time-rewind/totk-rewind.gif)
 
 If we go back to the Rewind power from Tears of the Kingdom, we can see that they seem to have a very similar situation.
 There are a few differences though:
