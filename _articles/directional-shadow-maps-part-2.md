@@ -541,9 +541,8 @@ However, regarding the peter panning, the slope-scaled bias can't fix the issue 
 
 Also of note, we are working with closed-surface meshes here, but non-closed-surface meshes need additional care.
 
-## Summary
+## Conclusion
 
-Let us recap the techniques we have covered so far:
 Biasing is a technique used to fix self-shadowing issues, resulting in acne in worst cases.
 There is no final out-of-the-box solution for biasing, just a collection of techniques that can be used to mitigate the 
 issue.
