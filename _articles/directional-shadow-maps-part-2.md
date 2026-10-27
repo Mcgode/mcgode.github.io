@@ -54,7 +54,7 @@ Why do we even bother with this approach if it does not provide correct occlusio
 Because it is still a great approximation which we can work around.
 
 So how do we fix it? By accepting that we are dealing with an approximation, and that we can work around it by 
-using a technique called shadow mapping bias.
+using a technique called shadow bias.
 
 ## Constant shadow bias
 
@@ -118,7 +118,7 @@ If you play around now and modify the shadow map resolution, you will notice tha
 be a lot more predictable.
 
 You might also notice that the higher the resolution, the lower the peter panning. 
-This is because peter panning shifting is proportional to texel size. 
+This is because peter panning offest scales with shadow texel size. 
 If the resolution is higher, the texel size is smaller, and thus the peter panning shifting is smaller, and less 
 noticeable.
 
@@ -146,7 +146,7 @@ So let's be smart about it. How about we use that relative slope to dynamically 
     ]' %}
 
 This method is what we call slope-based bias.
-While there are variants of it, this formula is the closest to what is considered to be the standard one.
+While there are variants of it, this formula is probably the closest to what is considered to be the standard one.
 
 As you can see, it drastically reduces peter panning, as we can use much lower bias factors with it.
 
@@ -427,8 +427,8 @@ You can use their projection into shadow space to compute $$\frac {\partial z} {
 ```wgsl
 // Where one world unit along each tangent lands in shadowCoord space
 // (we assume that the ndc-to-uv transform is included in `lightMatrix`)
-let d1 = (lightMatrix * vec4<f32>(worldPosition + tangent, 1.0)).xyz - shadowCoord;
-let d2 = (lightMatrix * vec4<f32>(worldPosition + bitangent, 1.0)).xyz - shadowCoord;
+let d1 = (lightMatrix * vec4<f32>(worldPos + tangent, 1.0)).xyz - shadowCoord;
+let d2 = (lightMatrix * vec4<f32>(worldPos + bitangent, 1.0)).xyz - shadowCoord;
 
 // dz = g.x * du + g.y * dv holds for both tangents, so solve for g = dz/d(u,v)
 let det = d1.x * d2.y - d1.y * d2.x;
@@ -500,7 +500,7 @@ While not exactly a bias technique, it has emerged as a widespread technique for
 The principle is quite simple: instead of rendering front faces for shadow maps, we render back faces (i.e., we cull 
 front faces).
 The goal with it is to keep receiving useful occlusion information while reducing self-shadowing occurrences.
-Since fragments on these back faces tend to face away from the light anyway, they would be unlighted due to
+Since fragments on these back faces tend to face away from the light anyway, they would be unlit due to
 $$\vec L \cdot \vec N < 0$$, so even if there were self-shadowing artifacts, they would not be visible.
 
 {% include figure.liquid
