@@ -6,7 +6,6 @@ categories: [articles]
 lab: true
 math: true
 published: true
-unlisted: true
 ---
 
 We ended the last part with the following state:
