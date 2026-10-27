@@ -456,9 +456,9 @@ texels can still hold depths from that very surface, which is what causes self-s
 At grazing angles, this offset allows us to shift the bias horizontally rather than simply depth-wise, making this 
 approach particularly useful for reducing self-shadowing artifacts.
 
-For a deep dive, I highly recommend [Daniel Holbert's Godot proposal](https://github.com/godotengine/godot/issues/17260) 
-which explains the technique in detail.
-![](https://user-images.githubusercontent.com/7088062/36948961-df37690e-1fea-11e8-8999-af8af60403fb.png)
+For a deep dive, I highly recommend Daniel Holbert's GDC poster "Saying goodbye to shadow acne" which explains the 
+technique in detail.
+![Normal offset bias poster](https://user-images.githubusercontent.com/7088062/36948961-df37690e-1fea-11e8-8999-af8af60403fb.png)
 
 Let's implement it in our example. 
 We will modify the light-local position retrieval function, but we will keep the basic shadow visibility function with 
@@ -507,4 +507,4 @@ Next part: [Part 3]({% link _articles/directional-shadow-maps-part-3.md %}).
 - Microsoft Docs - [Depth Bias](https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage-depth-bias)
 - Real-Time Rendering, 4th Edition - [7.4. Shadow maps](https://www.realtimerendering.com/)
 - [Shadow mapping tricks and techniques](https://gdcvault.com/play/1013442/Shadow-Mapping-Tricks-and), John Isidoro, GDC 2006.
-- [Shadow normal offset bias](https://github.com/godotengine/godot/issues/17260), Godot GitHub issues, by Daniel Holbert
+- [Shadow normal offset bias](https://github.com/godotengine/godot/issues/17260), Godot proposals
