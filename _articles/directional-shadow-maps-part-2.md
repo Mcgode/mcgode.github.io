@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Rendering directional shadow maps in 2026 - Part 2"
-date: 2026-10-22
+date: 2026-10-27
 categories: [articles]
 lab: true
 math: true
