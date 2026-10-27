@@ -20,10 +20,10 @@ import { createLitMaterial } from './lit-material.js';
  * @param {object} options
  * @param {DirectionalShadowPass} options.pass
  * @param {any} options.visibility A node created by `loadWgslFunction`.
- * @param {any} options.projection A node created by `wgslFromSource`, with the following contract:
+ * @param {any} options.projection A node created by `wgslFunctionFromText`, with the following contract:
  *
  *     fn retrieveLightLocalPosition(
- *         lightViewProj: mat4x4<f32>,  // world space -> shadow coordinates (NDC-to-uv transform included)
+ *         lightMatrix: mat4x4<f32>,    // world space -> shadow coordinates (NDC-to-uv transform included)
  *         worldPos: vec3<f32>,
  *         worldNormal: vec3<f32>,      // optional: unit surface normal
  *         lightDirection: vec3<f32>,   // optional: unit vector from the surface towards the light
