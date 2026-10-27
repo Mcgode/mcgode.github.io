@@ -494,7 +494,69 @@ You can visually see this by cranking up the normal offset bias.
 
 ## Back face shadow maps, a.k.a. side-stepping the issue entirely
 
+Lastly, another technique I wanted to cover is back-face shadow maps. 
+While not exactly a bias technique, it has emerged as a widespread technique for dealing with self-shadowing artifacts.
+
+The principle is quite simple: instead of rendering front faces for shadow maps, we render back faces (i.e., we cull 
+front faces).
+The goal with it is to keep receiving useful occlusion information while reducing self-shadowing occurrences.
+Since fragments on these back faces tend to face away from the light anyway, they would be unlighted due to
+$$\vec L \cdot \vec N < 0$$, so even if there were self-shadowing artifacts, they would not be visible.
+
+{% include figure.liquid
+    src="/assets/img/articles/shadow-maps/backface.png"
+    alt="Back face shadow maps"
+    caption='<a href="https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping">LearnOpenGL</a>, Joey de Vries, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>'
+%}
+
+Let's try it out:
+
+{% include lab-viewport.liquid
+    demo="shadow-step"
+    code="shadow/wgsl/base.wgsl"
+    options='{"filter":"nearest","side":"back"}' %}
+
+Even without any bias, we get some pretty good results, but a close look will still reveal some self-shadowing 
+artifacts.
+
+If you look at the box borders that go from lighted to unlighted, you can easily see some self-shadowing staircase 
+artifacts.
+Looking some more, at the junction between boxes and the surface plane, you can also find some light leaking, the result 
+of a slight peter panning.
+
+If you lower the shadow map resolution, not only will these artifacts be more visible, but at some point, the thin
+"umbrella" solid will start to self-shadow as well. 
+
+If a mesh is too thin (relative to the shadow map resolution), it will self-shadow.
+
+A touch of normal offset bias should fix the self-shadowing issue.
+For the peter panning, let's try to add a bit of negative slope-scaled bias as well:
+{% include lab-viewport.liquid
+    demo="shadow-step"
+    code="shadow/wgsl/shadowVisibility/negative-bias.wgsl"
+    options='{"filter": "nearest", "normalOffset": true, "side": "back"}' %}
+
+Okay, the normal offset bias has fixed the self-shadowing issue.
+However, regarding the peter panning, the slope-scaled bias can't fix the issue without creating some self-shadowing.
+
+Also of note, we are working with closed-surface meshes here, but non-closed-surface meshes need additional care.
+
 ## Summary
+
+Let us recap the techniques we have covered so far:
+Biasing is a technique used to fix self-shadowing issues, resulting in acne in worst cases.
+There is no final out-of-the-box solution for biasing, just a collection of techniques that can be used to mitigate the 
+issue.
+
+Usually, modern engines tend to use a combination of these techniques to achieve the best possible results.
+For instance, I have worked on an internal engine that combines hardware bias and receiver plane bias.
+
+To implement shadow mapping in your own engine, you will need to look at those techniques and choose one for yourself. 
+From my personal experience, I have found that normal offset biasing is the best to start with, but it might not fit
+your own requirements.
+
+It should be noted that some of the self-shadowing issues can be further alleviated using suitable shadow filtering, 
+but this is a topic we will be covering in the next part.
 
 Previous part: [Part 1]({% link _articles/directional-shadow-maps-part-1.md %}).
 Next part: [Part 3]({% link _articles/directional-shadow-maps-part-3.md %}).
