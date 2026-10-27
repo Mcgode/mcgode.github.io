@@ -1,6 +1,8 @@
 ---
 layout: post
 title: "Rendering directional shadow maps in 2026 - Part 2"
+description: "Fix shadow acne and peter-panning in shadow maps: constant, slope-based, hardware, receiver plane and normal offset bias, and back face rendering, with interactive WebGPU demos."
+image: /assets/img/articles/shadow-maps/illustration.png
 date: 2026-10-27
 categories: [articles]
 lab: true

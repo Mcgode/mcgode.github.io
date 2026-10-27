@@ -23,7 +23,7 @@ email: max@godefroy.net
 description: >- # this means to ignore newlines until "baseurl:"
   Personal website of Max Godefroy. You can find out more about me and my projects, and read my articles.
 baseurl: "" # the subpath of your site, e.g. /blog
-url: maxgodefroy.com # the base hostname & protocol for your site, e.g. http://example.com
+url: https://www.maxgodefroy.com # the base hostname & protocol for your site, e.g. http://example.com
 github_username: Mcgode
 linkedin_username: max-godefroy-192490161
 
@@ -35,6 +35,16 @@ kramdown:
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+  - jekyll-sitemap
+
+feed:
+  # Articles live in a collection, not _posts, so serve them as the main feed
+  path: /feed.xml
+  collections:
+    articles:
+      path: /feed.xml
+    posts:
+      path: /feed/posts.xml
 
 # Exclude from processing.
 # The following items will not be processed, by default.

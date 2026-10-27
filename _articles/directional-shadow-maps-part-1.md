@@ -1,6 +1,8 @@
 ---
 layout: post
 title: "Rendering directional shadow maps in 2026 - Part 1"
+description: "An up-to-date guide to directional shadow mapping with WebGPU: how shadow maps work, rendering the depth map from the light, and sampling it in a shader, with interactive demos."
+image: /assets/img/articles/shadow-maps/illustration.png
 date: 2026-10-22
 categories: [articles]
 lab: true
@@ -8,7 +10,7 @@ published: true
 math: true
 ---
 
-![Illustration](/assets/img/articles/shadow-maps/illustration.png)
+![Directional shadow map illustration](/assets/img/articles/shadow-maps/illustration.png)
 
 A few weeks ago, I was working on implementing a shadow map solution for one of my engine samples, and was quite 
 surprised at how complicated it was to find up-to-date information on the subject. Not to shame any of the devs who 

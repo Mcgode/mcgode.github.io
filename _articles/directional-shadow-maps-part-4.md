@@ -6,6 +6,8 @@ categories: [articles]
 lab: true
 published: true
 unlisted: true
+sitemap: false
+draft: true
 ---
 
 Work in progress: cascaded shadow maps.
