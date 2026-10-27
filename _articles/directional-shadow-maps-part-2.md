@@ -557,7 +557,7 @@ It should be noted that some of the self-shadowing issues can be further allevia
 but this is a topic we will be covering in the next part.
 
 Previous part: [Part 1]({% link _articles/directional-shadow-maps-part-1.md %}).
-Next part: [Part 3]({% link _articles/directional-shadow-maps-part-3.md %}).
+Next part: Part 3.
 
 # References
 
