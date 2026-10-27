@@ -426,9 +426,9 @@ let bitangent = cross(normal, tangent);
 You can use their projection into shadow space to compute $$\frac {\partial z} {\partial UV}$$:
 ```wgsl
 // Where one world unit along each tangent lands in shadowCoord space
-// (we assume that the ndc-to-uv transform is included in `lightSpaceMatrix`)
-let d1 = (lightSpaceMatrix * vec4<f32>(worldPosition + tangent, 1.0)).xyz - shadowCoord;
-let d2 = (lightSpaceMatrix * vec4<f32>(worldPosition + bitangent, 1.0)).xyz - shadowCoord;
+// (we assume that the ndc-to-uv transform is included in `lightMatrix`)
+let d1 = (lightMatrix * vec4<f32>(worldPosition + tangent, 1.0)).xyz - shadowCoord;
+let d2 = (lightMatrix * vec4<f32>(worldPosition + bitangent, 1.0)).xyz - shadowCoord;
 
 // dz = g.x * du + g.y * dv holds for both tangents, so solve for g = dz/d(u,v)
 let det = d1.x * d2.y - d1.y * d2.x;
@@ -447,8 +447,11 @@ matrix multiplication.
 ## Normal offset bias
 
 The final bias technique we will cover is called **normal offset bias**.
-It consists in offsetting the original world position along its normal before projecting in to light-space.
-Basically, we are using a virtually enlarged surface to avoid self-shadowing.
+It consists in offsetting the original world position along its normal before projecting into light-space.
+Only the lookup position moves, the shadow map itself is unchanged: it is as if we were testing against a slightly 
+inflated version of the receiver.
+The goal is to move the tested position out of the "hazard zone", the thin region around a surface where the shadow map
+texels can still hold depths from that very surface, which is what causes self-shadowing.
 
 At grazing angles, this offset allows us to shift the bias horizontally rather than simply depth-wise, making this 
 approach particularly useful for reducing self-shadowing artifacts.
@@ -473,14 +476,18 @@ no extra bias.
         }
     ]' %}
 
-That's super impressive. With just a little bit of tweaking, we have almost no acne, with little to no peter panning.
+That's impressive. With just a little bit of tweaking, we have almost no acne, with little to no peter panning.
 
-But the result is not perfect, if you look close, you can see that we still get some self-shadowing in concave 
-transitions, and no amount of fiddling with the normal offset bias will fix it.
+But the result is not perfect: if you look closely, you can still see some self-shadowing in concave transitions, 
+and raising the normal offset does not reliably remove it.
+That's because, near a concave corner, the offset is computed from the fragment's own normal only.
+It can push the fragment out of its own surface's hazard zone while landing it inside the hazard zone of the 
+neighbouring surface, which has a different orientation.
+
 Not all concave surfaces get this issue, but as soon as we have somewhat tight concave spaces like we have in the scene,
 you will get self-shadowing. 
-In these cases, the normal offsetting is not enough to fix the issue, and if you truly want to solve it, you will 
-need some additional biasing.
+In these cases, normal offsetting alone is not enough, and if you truly want to solve it, you will need some additional
+biasing.
 
 Another side effect of this technique is that it actually "shrinks" shadow silhouettes.
 You can visually see this by cranking up the normal offset bias.
