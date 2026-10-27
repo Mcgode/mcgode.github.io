@@ -80,3 +80,9 @@ collections:
 
   articles:
     output: true
+
+defaults:
+  - scope:
+      path: "google4acf30004c18bbb4.html"
+    values:
+      sitemap: false
